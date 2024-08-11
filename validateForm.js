@@ -8,7 +8,7 @@ $(document).ready(function () {
 
         // Validate name
         if (name.length < 5) {
-            alert("Name must be at least 3 characters long.")
+            alert("Name must be at least 5 characters long.")
             isValid = false;
         }
 
