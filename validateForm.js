@@ -7,7 +7,7 @@ $(document).ready(function () {
         var isValid = true;
 
         // Validate name
-        if (name.length < 3) {
+        if (name.length < 5) {
             alert("Name must be at least 3 characters long.")
             isValid = false;
         }
@@ -23,8 +23,8 @@ $(document).ready(function () {
         }
 
         // Validate password
-        if (password.length < 6) {
-            alert("Password must be at least 6 characters long.");
+        if (password.length < 8) {
+            alert("Password must be at least 8 characters long.");
             isValid = false;
         }
 
