@@ -34,7 +34,7 @@
                             <a class="nav-link active" href=""><i class="material-icons">home</i>Dashboard</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">inventory</i>inventory</a>
+                            <a class="nav-link" href="#"><i class="material-icons">inventory</i>Inventory</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#"><i class="material-icons">category</i>Products</a>
@@ -74,8 +74,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- Main content can be added here -->
-                <!--methana idala oyalage part eka gahanna-->
+
                 <?php
                 // Database connection
                 $servername = "localhost:3307";
@@ -145,233 +144,155 @@
                 $typeResult = $conn->query($typeSql);
                 ?>
 
-                <!DOCTYPE html>
-                <html lang="en">
+                <div class="container mt-5">
+                    <h2 class="text-center">Inventory Management</h2>
 
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Inventory Management</title>
-                    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-                        rel="stylesheet">
-                    <style>
-                        /* Custom CSS Styling */
-                        body {
-                            background-color: #f8f9fa;
-                            font-family: 'Arial', sans-serif;
-                        }
-
-                        h2 {
-                            margin-bottom: 20px;
-                            color: #343a40;
-                        }
-
-                        .table {
-                            background-color: #fff;
-                            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                        }
-
-                        .table th {
-                            background-color: #007bff;
-                            color: #fff;
-                            text-align: center;
-                        }
-
-                        .table td {
-                            text-align: center;
-                            vertical-align: middle;
-                        }
-
-                        .table tr:nth-child(even) {
-                            background-color: #f2f2f2;
-                        }
-
-                        .form-control {
-                            width: 300px;
-                            margin: 20px auto;
-                            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                        }
-                    </style>
-                </head>
-
-                <body>
-
-                    <div class="container mt-5">
-                        <h2 class="text-center">Inventory Management</h2>
-
-                        <!-- Filters -->
-                        <div class="d-flex mb-3">
-                            <select id="filterBrand" class="form-control me-2" onchange="filterTable()">
-                                <option value="">Select Brand</option>
-                                <?php
-                                if ($brandResult->num_rows > 0) {
-                                    while ($row = $brandResult->fetch_assoc()) {
-                                        echo "<option value='" . $row["Brand"] . "'>" . $row["Brand"] . "</option>";
-                                    }
+                    <!-- Filters -->
+                    <div class="d-flex mb-3">
+                        <select id="filterBrand" class="form-control me-2" onchange="filterTable()">
+                            <option value="">Select Brand</option>
+                            <?php
+                            if ($brandResult->num_rows > 0) {
+                                while ($row = $brandResult->fetch_assoc()) {
+                                    echo "<option value='" . $row["Brand"] . "'>" . $row["Brand"] . "</option>";
                                 }
-                                ?>
-                            </select>
+                            }
+                            ?>
+                        </select>
 
-                            <select id="filterType" class="form-control" onchange="filterTable()">
-                                <option value="">Select Type</option>
-                                <?php
-                                if ($typeResult->num_rows > 0) {
-                                    while ($row = $typeResult->fetch_assoc()) {
-                                        echo "<option value='" . $row["Type"] . "'>" . $row["Type"] . "</option>";
-                                    }
+                        <select id="filterType" class="form-control" onchange="filterTable()">
+                            <option value="">Select Type</option>
+                            <?php
+                            if ($typeResult->num_rows > 0) {
+                                while ($row = $typeResult->fetch_assoc()) {
+                                    echo "<option value='" . $row["Type"] . "'>" . $row["Type"] . "</option>";
                                 }
-                                ?>
-                            </select>
-                        </div>
-
-                        <!-- Search Bar -->
-                        <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="Search for products..."
-                            class="form-control mb-3">
-
-                        <!-- Inventory Table -->
-                        <table class="table table-striped table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Product ID</th>
-                                    <th>Product Name</th>
-                                    <th>Brand</th>
-                                    <th>Type</th>
-                                    <th>SKU</th>
-                                    <th>Total Quantity</th>
-                                    <th>Last Received Date</th>
-                                    <th>Total Value</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="inventoryTableBody">
-                                <?php
-                                if ($result->num_rows > 0) {
-                                    // Output data of each row
-                                    while ($row = $result->fetch_assoc()) {
-                                        echo "<tr>";
-                                        echo "<td>" . $row["ProductID"] . "</td>";
-                                        echo "<td>" . $row["ProductName"] . "</td>";
-                                        echo "<td>" . $row["Brand"] . "</td>";
-                                        echo "<td>" . $row["Type"] . "</td>";
-                                        echo "<td>" . $row["SKU"] . "</td>";
-                                        echo "<td>" . $row["TotalQuantity"] . "</td>";
-                                        echo "<td>" . $row["LastReceivedDate"] . "</td>";
-                                        echo "<td>" . $row["TotalValue"] . "</td>";
-                                        echo "<td><button class='btn btn-warning' onclick='openUpdateModal(" . $row["ProductID"] . ", " . $row["TotalQuantity"] . ")'>Update Quantity</button></td>";
-                                        echo "</tr>";
-                                    }
-                                } else {
-                                    echo "<tr><td colspan='9'>No records found</td></tr>";
-                                }
-                                ?>
-                            </tbody>
-                        </table>
+                            }
+                            ?>
+                        </select>
                     </div>
 
-                    <!-- Modal -->
-                    <div class="modal fade" id="updateQuantityModal" tabindex="-1"
-                        aria-labelledby="updateQuantityModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="updateQuantityModalLabel">Update Quantity</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <form method="post">
-                                    <div class="modal-body">
-                                        <input type="hidden" id="modalProductID" name="productID">
-                                        <div class="mb-3">
-                                            <label for="modalQuantity" class="form-label">Quantity to Remove</label>
-                                            <input type="number" class="form-control" id="modalQuantity" name="quantity"
-                                                required>
-                                        </div>
+                    <!-- Search Bar -->
+                    <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="Search for products..."
+                        class="form-control mb-3">
+
+                    <!-- Inventory Table -->
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Product ID</th>
+                                <th>Product Name</th>
+                                <th>Brand</th>
+                                <th>Type</th>
+                                <th>SKU</th>
+                                <th>Total Quantity</th>
+                                <th>Last Received Date</th>
+                                <th>Total Value</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTableBody">
+                            <?php
+                            if ($result->num_rows > 0) {
+                                // Output data of each row
+                                while ($row = $result->fetch_assoc()) {
+                                    echo "<tr>";
+                                    echo "<td>" . $row["ProductID"] . "</td>";
+                                    echo "<td>" . $row["ProductName"] . "</td>";
+                                    echo "<td>" . $row["Brand"] . "</td>";
+                                    echo "<td>" . $row["Type"] . "</td>";
+                                    echo "<td>" . $row["SKU"] . "</td>";
+                                    echo "<td>" . $row["TotalQuantity"] . "</td>";
+                                    echo "<td>" . $row["LastReceivedDate"] . "</td>";
+                                    echo "<td>" . $row["TotalValue"] . "</td>";
+                                    echo "<td><button class='btn btn-warning' onclick='openUpdateModal(" . $row["ProductID"] . ", " . $row["TotalQuantity"] . ")'>Update Quantity</button></td>";
+                                    echo "</tr>";
+                                }
+                            } else {
+                                echo "<tr><td colspan='9'>No records found.</td></tr>";
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Modal for Updating Quantity -->
+                <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="updateModalLabel">Update Quantity</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="updateForm" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" onsubmit="return confirmUpdate()">
+                                    <input type="hidden" name="productID" id="productID">
+                                    <div class="mb-3">
+                                        <label for="quantity" class="form-label">Quantity to Remove:</label>
+                                        <input type="number" class="form-control" id="quantity" name="quantity" required>
                                     </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">Close</button>
-                                        <button type="submit" class="btn btn-primary"
-                                            name="updateQuantity">Update</button>
-                                    </div>
+                                    <button type="submit" name="updateQuantity" class="btn btn-primary">Update</button>
                                 </form>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-                    <script>
-                        function openUpdateModal(productID, currentQuantity) {
-                            document.getElementById('modalProductID').value = productID;
-                            document.getElementById('modalQuantity').value = '';
-                            var myModal = new bootstrap.Modal(document.getElementById('updateQuantityModal'));
-                            myModal.show();
-                        }
+            </main>
+        </div>
+    </div>
 
-                        function filterTable() {
-                            let brandFilter = document.getElementById("filterBrand").value.toUpperCase();
-                            let typeFilter = document.getElementById("filterType").value.toUpperCase();
-                            let tableBody = document.getElementById("inventoryTableBody");
-                            let rows = tableBody.getElementsByTagName("tr");
+    <!-- Script to filter table based on Brand and Type -->
+    <script>
+        function filterTable() {
+            const brandFilter = document.getElementById('filterBrand').value.toLowerCase();
+            const typeFilter = document.getElementById('filterType').value.toLowerCase();
+            const rows = document.getElementById('inventoryTableBody').getElementsByTagName('tr');
 
-                            for (let i = 0; i < rows.length; i++) {
-                                let cells = rows[i].getElementsByTagName("td");
-                                let brand = cells[2].textContent.toUpperCase();
-                                let type = cells[3].textContent.toUpperCase();
-                                let display = true;
+            for (const row of rows) {
+                const brand = row.cells[2].innerText.toLowerCase();
+                const type = row.cells[3].innerText.toLowerCase();
 
-                                if (brandFilter && brand.indexOf(brandFilter) === -1) {
-                                    display = false;
-                                }
+                if ((brandFilter === '' || brand.includes(brandFilter)) &&
+                    (typeFilter === '' || type.includes(typeFilter))) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        }
 
-                                if (typeFilter && type.indexOf(typeFilter) === -1) {
-                                    display = false;
-                                }
+        // Script to search the table
+        function searchTable() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.getElementById('inventoryTableBody').getElementsByTagName('tr');
 
-                                rows[i].style.display = display ? "" : "none";
-                            }
-                        }
+            for (const row of rows) {
+                const productName = row.cells[1].innerText.toLowerCase();
+                if (productName.includes(searchInput)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        }
 
-                        function searchTable() {
-                            let input = document.getElementById("searchInput");
-                            let filter = input.value.toUpperCase();
-                            let table = document.querySelector("table");
-                            let tr = table.getElementsByTagName("tr");
+        // Script to open the update modal and populate with product data
+        function openUpdateModal(productID, currentQuantity) {
+            document.getElementById('productID').value = productID;
+            document.getElementById('quantity').max = currentQuantity;
+            var updateModal = new bootstrap.Modal(document.getElementById('updateModal'));
+            updateModal.show();
+        }
 
-                            for (let i = 1; i < tr.length; i++) {
-                                let td = tr[i].getElementsByTagName("td");
-                                let match = false;
-                                for (let j = 0; j < td.length; j++) {
-                                    if (td[j].textContent.toUpperCase().indexOf(filter) > -1) {
-                                        match = true;
-                                    }
-                                }
-                                if (match) {
-                                    tr[i].style.display = "";
-                                } else {
-                                    tr[i].style.display = "none";
-                                }
-                            }
-                        }
-                    </script>
+        // Script to confirm the update action
+        function confirmUpdate() {
+            return confirm("Are you sure you want to update the quantity?");
+        }
+    </script>
 
-                </body>
-
-                </html>
-
-                <?php
-                $conn->close();
-                ?>
-
-
-
-</body>
-
-</html>
-
-</main>
-</div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
