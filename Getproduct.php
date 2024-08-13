@@ -46,7 +46,7 @@
                             <a class="nav-link" href="#"><i class="material-icons">local_shipping</i>Suppliers</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons md-18">report</i>Reports</a>
+                            <a class="nav-link" href="#"><i class="material-icons md-18">store</i>Stores</a>
                         </li>
                     </ul>
                     <!-- Logout link at the bottom of the sidebar -->
