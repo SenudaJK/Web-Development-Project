@@ -4,25 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Name</title>
+    <title>Inventory Management</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="sketch.css">
     <style>
-        /* CSS to ensure the sidebar stays fixed while scrolling */
-        #sidebar {
-            position: fixed;
-            top: 0;
-            height: 100vh;
-            overflow-y: auto;
-            width: 250px; /* Adjust as needed */
-        }
-
-        main {
-            margin-left: 250px; /* Should match the width of the sidebar */
-        }
-
         .fade-away {
             opacity: 1;
             transition: opacity 0.5s ease-out;
@@ -54,10 +41,10 @@
                     <!-- Sidebar navigation links -->
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link active" href=""><i class="material-icons">home</i>Dashboard</a>
+                            <a class="nav-link active" href="dashboard.php"><i class="material-icons">home</i>Dashboard</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">inventory</i>Inventory</a>
+                            <a class="nav-link" href="InventoryUpdate.php"><i class="material-icons">inventory</i>Inventory</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#"><i class="material-icons">category</i>Products</a>
@@ -198,6 +185,7 @@
                     <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="Search for products..."
                         class="form-control mb-3">
 
+                    <div style="height: 300px; overflow-y: auto;">
                     <!-- Inventory Table -->
                     <table class="table table-striped table-bordered">
                         <thead>
@@ -217,106 +205,130 @@
                             <?php
                             if ($result->num_rows > 0) {
                                 while ($row = $result->fetch_assoc()) {
+                                    
                                     echo "<tr>";
-                                    echo "<td>" . $row["ProductID"] . "</td>";
-                                    echo "<td>" . $row["ProductName"] . "</td>";
-                                    echo "<td>" . $row["Brand"] . "</td>";
-                                    echo "<td>" . $row["Type"] . "</td>";
-                                    echo "<td>" . $row["SKU"] . "</td>";
-                                    echo "<td>" . $row["TotalQuantity"] . "</td>";
-                                    echo "<td>" . $row["LastReceivedDate"] . "</td>";
-                                    echo "<td>" . $row["TotalValue"] . "</td>";
-                                    echo "<td><button class='btn btn-danger' onclick='showRemoveModal(" . $row["ProductID"] . ")'>Remove</button></td>";
+                                    echo "<td>" . htmlspecialchars($row["ProductID"] ) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row["ProductName"])  . "</td>";
+                                    echo "<td>" . htmlspecialchars($row["Brand"])  . "</td>";
+                                    echo "<td>" . htmlspecialchars($row["Type"])  . "</td>";
+                                    echo "<td>" . htmlspecialchars($row["SKU"])  . "</td>";
+                                    echo "<td>" . htmlspecialchars($row["TotalQuantity"])  . "</td>";
+                                    echo "<td>" . htmlspecialchars($row["LastReceivedDate"])  . "</td>";
+                                    echo "<td>" . htmlspecialchars($row["TotalValue"])  . "</td>";
+                                    echo "<td><button class='btn btn-danger' onclick='showRemoveModal(" . $row["ProductID"] . ", \"" . htmlspecialchars($row["ProductName"]) . "\")'>Remove</button></td>";
                                     echo "</tr>";
                                 }
+                            } else {
+                                echo "<tr><td colspan='9'>No records found.</td></tr>";
                             }
                             ?>
                         </tbody>
                     </table>
+                    </div>
+                </div>
 
-                    <!-- Modal for removing quantity -->
-                    <div class="modal fade" id="removeModal" tabindex="-1" aria-labelledby="removeModalLabel"
-                        aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="removeModalLabel">Remove Quantity</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form method="post" id="removeForm">
-                                        <input type="hidden" name="productID" id="productID">
-                                        <div class="mb-3">
-                                            <label for="quantity" class="form-label">Quantity to Remove</label>
-                                            <input type="number" class="form-control" id="quantity" name="quantity" required>
-                                        </div>
-                                        <button type="submit" class="btn btn-danger" name="updateQuantity">Remove</button>
-                                    </form>
-                                </div>
+                <!-- Remove Quantity Modal -->
+                <div class="modal fade" id="removeModal" tabindex="-1" role="dialog" aria-labelledby="removeModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="removeModalLabel">Remove Quantity</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="removeForm" method="POST">
+                                    <input type="hidden" id="productID" name="productID">
+                                    <div class="form-group">
+                                        <label for="quantity">Quantity to remove</label>
+                                        <input type="number" class="form-control" id="quantity" name="quantity" min="1"
+                                            required>
+                                    </div>
+                                    <button type="submit" class="btn btn-danger mt-3" name="updateQuantity" >Remove</button>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
+
             </main>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            // Function to show the remove modal with the correct Product ID
-            window.showRemoveModal = function (productID) {
-                document.getElementById('productID').value = productID;
-                var removeModal = new bootstrap.Modal(document.getElementById('removeModal'));
-                removeModal.show();
+        document.addEventListener("DOMContentLoaded", function () {
+            const alertElement = document.querySelector(".fade-away");
+
+            if (alertElement) {
+                setTimeout(() => {
+                    alertElement.classList.add("hide");
+                    setTimeout(() => alertElement.remove(), 500);
+                }, 2000);
             }
-
-            // Function to filter the table by brand and type
-            window.filterTable = function () {
-                var brand = document.getElementById('filterBrand').value.toLowerCase();
-                var type = document.getElementById('filterType').value.toLowerCase();
-                var rows = document.querySelectorAll('#inventoryTableBody tr');
-
-                rows.forEach(row => {
-                    var rowBrand = row.children[2].textContent.toLowerCase();
-                    var rowType = row.children[3].textContent.toLowerCase();
-
-                    if ((brand === '' || rowBrand.includes(brand)) &&
-                        (type === '' || rowType.includes(type))) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
-            }
-
-            // Function to search the table
-            window.searchTable = function () {
-                var input = document.getElementById('searchInput').value.toLowerCase();
-                var rows = document.querySelectorAll('#inventoryTableBody tr');
-
-                rows.forEach(row => {
-                    var cells = row.getElementsByTagName('td');
-                    var found = Array.from(cells).some(cell => cell.textContent.toLowerCase().includes(input));
-
-                    row.style.display = found ? '' : 'none';
-                });
-            }
-
-            // Function to handle alert fading away
-            function fadeAlerts() {
-                var alerts = document.querySelectorAll('.alert');
-                alerts.forEach(alert => {
-                    setTimeout(() => {
-                        alert.classList.add('hide');
-                        setTimeout(() => alert.remove(), 500); // Remove after fade-out
-                    }, 3000); // Adjust delay as needed
-                });
-            }
-
-            fadeAlerts();
         });
+
+        function showRemoveModal(productID, productName) {
+            const productIDField = document.getElementById("productID");
+            productIDField.value = productID;
+
+            const removeForm = document.getElementById("removeForm");
+            removeForm.onsubmit = function (event) {
+                if (!confirm("Are you sure you want to update the quantity for " + productName + "?")) {
+                    event.preventDefault(); // Prevent form submission if user cancels
+                }
+            };
+
+            const removeModal = new bootstrap.Modal(document.getElementById("removeModal"));
+            removeModal.show();
+        }
+
+        function searchTable() {
+            const input = document.getElementById("searchInput");
+            const filter = input.value.toUpperCase();
+            const table = document.querySelector("table tbody");
+            const rows = table.getElementsByTagName("tr");
+
+            for (let i = 0; i < rows.length; i++) {
+                let row = rows[i];
+                let cells = row.getElementsByTagName("td");
+                let found = false;
+
+                for (let j = 0; j < cells.length; j++) {
+                    if (cells[j].innerText.toUpperCase().indexOf(filter) > -1) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (found) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            }
+        }
+
+        function filterTable() {
+            const filterBrand = document.getElementById("filterBrand").value.toUpperCase();
+            const filterType = document.getElementById("filterType").value.toUpperCase();
+            const table = document.querySelector("table tbody");
+            const rows = table.getElementsByTagName("tr");
+
+            for (let i = 0; i < rows.length; i++) {
+                let row = rows[i];
+                let brandCell = row.getElementsByTagName("td")[2];
+                let typeCell = row.getElementsByTagName("td")[3];
+                let brandMatch = filterBrand === "" || brandCell.innerText.toUpperCase().indexOf(filterBrand) > -1;
+                let typeMatch = filterType === "" || typeCell.innerText.toUpperCase().indexOf(filterType) > -1;
+
+                if (brandMatch && typeMatch) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            }
+        }
     </script>
 </body>
 
