@@ -104,6 +104,7 @@
             
                                 if($result = $mysqli->query($sql)){
                                     if($result->num_rows > 0){
+                                        echo '<div style="height: 300px; overflow-y: auto;">';
                                         echo '<table class="table table-bordered table-striped">';
                                             echo "<thead>";
                                                 echo "<tr>";
@@ -131,6 +132,7 @@
                                             }
                                             echo "</tbody>";                            
                                         echo "</table>";
+                                        echo '</div>';
                                         // Free result set
                                         $result->free();
                                     } else{
