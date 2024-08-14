@@ -1,6 +1,6 @@
 <?php
 // Include config file
-require_once "config.php";
+require_once "shopConfig.php";
  
 // Define variables and initialize with empty values
 $m_name = $address = $s_email = "";
@@ -62,7 +62,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
             // Attempt to execute the prepared statement
             if($stmt->execute()){
                 // Records updated successfully. Redirect to landing page
-                header("location: index.php");
+                header("location: shopIndex.php");
                 exit();
             } else{
                 echo "Oops! Something went wrong. Please try again later.";
@@ -107,7 +107,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                 } else{
                     
                     // URL doesn't contain valid id. Redirect to error page
-                    header("location: error.php");
+                    header("location: shopError.php");
                     
                     exit();
                 }
@@ -125,7 +125,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
     }  else{
         
         // URL doesn't contain id parameter. Redirect to error page
-        header("location: error.php");
+        header("location: shopError.php");
         
         exit();
     }
@@ -170,7 +170,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                         </div>
                         <input type="hidden" name="id" value="<?php echo $id; ?>"/>
                         <input type="submit" class="btn btn-primary" value="Submit">
-                        <a href="index.php" class="btn btn-secondary ml-2">Cancel</a>
+                        <a href="shopIndex.php" class="btn btn-secondary ml-2">Cancel</a>
                     </form>
                 </div>
             </div>        
