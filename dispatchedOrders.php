@@ -70,7 +70,7 @@
 
                 <!-- Header for the main content with title and user information -->
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Suppliers</h1>
+                    <h1 class="h2">Dispatch Orders</h1>
                     <div class="text-right">
                         <div id="username-container">
                             <a id="username" href="#"><i class="material-icons" style="font-size:48px;">account_circle</i>Username</a>
@@ -87,7 +87,7 @@
                                 <div class="mt-5 mb-3 clearfix">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <h2 class="mb-0">Dispatch Order</h2>
-                                        <a href="create.php" class="btn btn-success"><i class="fa fa-plus"></i> Place New Order</a>
+                                        <a href="dispatchOrder.html" class="btn btn-success"><i class="fa fa-plus"></i> Place New Order</a>
                                     </div>
 
                                     <div class="d-flex justify-content-between align-items-center mt-3">
@@ -105,7 +105,8 @@
                                         <thead>
                                             <tr>
                                                 <th scope="col">SalesOrderID</th>
-                                                <th scope="col">Product ID</th>
+                                                <th scope="col">Product Name</th>
+                                                <th scope="col">Store Name</th>
                                                 <th scope="col">Quantity</th>
                                                 <th scope="col">Order Date</th>
                                             </tr>
@@ -118,8 +119,17 @@
                                                 // Initialize search variable
                                                 //$search = isset($_GET['search']) ? $mysqli_real_escape_string($_GET['search']) : '';
 
-                                                //  query to select all rows
-                                                $sql = "SELECT * FROM salesOrders";
+                                                //  query to select details about dispatched order
+                                                $sql = "SELECT 
+                                                        so.SalesOrderID,
+                                                        p.ProductName,
+                                                        s.StoreName,
+                                                        so.Quantity,                                                       
+                                                        so.OrderDate
+                                                        FROM salesOrders so
+                                                        JOIN products p ON so.ProductID = p.ProductID
+                                                        JOIN stores s ON s.StoreID
+                                                        LIMIT 17";
 
                                                 //store results
                                                 $result = mysqli_query($conn, $sql);
@@ -132,14 +142,16 @@
 
                                                     while ($row = mysqli_fetch_assoc($result)) {
                                                         $saleOrderID = $row['SalesOrderID'];
-                                                        $productID = $row['ProductID'];
+                                                        $productName = $row['ProductName'];
+                                                        $storeName = $row['StoreName'];
                                                         $quantity = $row['Quantity'];
                                                         $orderDate = $row['OrderDate'];
 
                                                         echo '<tr>
                                                         <td>' . $saleOrderID . '</td>
-                                                        <td>' . $productID . '</td>
-                                                        <td>' . $quantity . '</td>
+                                                        <td>' . $productName . '</td>
+                                                        <td>' . $storeName . '</td>
+                                                        <td>' . $quantity . '</td>                                                                                                             
                                                         <td>' . $orderDate . '</td>
                                                         </tr>';
                                                     }
