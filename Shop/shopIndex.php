@@ -78,11 +78,11 @@
                                 <div class="mt-5 mb-3 clearfix">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <h2 class="mb-0">Shop Details</h2>
-                                            <a href="create.php" class="btn btn-success"><i class="fa fa-plus"></i> Add New Shop</a>
+                                            <a href="shopCreate.php" class="btn btn-success"><i class="fa fa-plus"></i> Add New Shop</a>
                                     </div>
 
                                     <div class="d-flex justify-content-between align-items-center mt-3">
-                                        <form method="GET" action="index.php" class="d-flex align-items-center">
+                                        <form method="GET" action="shopIndex.php" class="d-flex align-items-center">
                                             <input type="text" name="search" class="form-control me-2" placeholder="Search by Name" value="<?php echo isset($_GET['search']) ? $_GET['search'] : ''; ?>">
                                                 <button class="btn btn-outline-success" type="submit">Search</button>
                                         </form>
@@ -91,7 +91,7 @@
             
                                 <?php
                                 // Include config file
-                                require_once "config.php";
+                                require_once "shopConfig.php";
                                 // Initialize search variable
                                 $search = isset($_GET['search']) ? $mysqli->real_escape_string($_GET['search']) : '';
                             
