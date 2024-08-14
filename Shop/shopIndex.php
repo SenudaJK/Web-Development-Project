@@ -124,9 +124,9 @@
                                                     echo "<td>" . $row['SEmail'] . "</td>";
                                                     echo "<td>";
                                                         
-                                                    echo '<a class="btn btn-primary btn-sm" href="update.php?id=' . $row['ShopID'] . '">Update</a>';
+                                                    echo '<a class="btn btn-primary btn-sm" href="shopUpdate.php?id=' . $row['ShopID'] . '">Update</a>';
                                                     echo "  ";
-                                                    echo '<a class="btn btn-danger btn-sm" href="delete.php?id=' . $row['ShopID'] . '">Delete</a>';
+                                                    echo '<a class="btn btn-danger btn-sm" href="shopDelete.php?id=' . $row['ShopID'] . '">Delete</a>';
                                                     echo "</td>";
                                                 echo "</tr>";
                                             }
