@@ -1,0 +1,457 @@
+.sidebar {
+    height: 100vh;
+    background-color: #343a40;
+    color: white;
+}
+.sidebar a {
+    color: white;
+    text-decoration: none;
+}
+.panel {
+    padding: 20px;
+    margin: 10px 0;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+}
+
+.nav-link:hover {
+    background-color: #fff;
+    cursor: pointer;
+    color: #000;
+}
+
+.nav-link {
+    padding: 20px 20px 20px 20px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+}
+
+#username{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: black;
+    text-decoration: none;    
+}
+
+#username-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: black;
+    text-decoration: none;
+
+}
+
+#username-container span {
+    margin-top: -15px;
+    margin-right: -10px;
+}
+
+.logout a{
+    display: flex;    
+    align-items: center;
+    position: absolute;
+    bottom: 10px; 
+}
+
+/*user profile css part*/
+
+
+
+.profile {
+    display: flex;
+    align-items: center; /* Align items vertically in the center */
+    padding: 10px;
+    background-color: #ffff; /* Optional: Background color for the profile section */
+    border-radius: 5px; /* Optional: Rounding the corners */
+    position: absolute;
+    top: 20px; /* Distance from the top of the screen */
+    right: 20px; /* Distance from the right side of the screen */
+}
+
+.user-pic {
+    width: 50px; /* Size of the profile picture */
+    height: 50px;
+    border-radius: 50%; /* Makes the picture round */
+    margin-right: 15px; /* Space between the picture and text */
+}
+
+.profile-info {
+    display: flex;
+    flex-direction: column; /* Arrange name and role vertically */
+}
+
+.name {
+    font-size: 20px; /* Adjust the font size for the name */
+    font-weight: bold; /* Make the name bold */
+    color: #333; /* Text color */
+}
+
+.role {
+    font-size: 14px; /* Adjust the font size for the role */
+    color: #777; /* Text color for the role (lighter) */
+}
+
+
+.sub-menu-wrap{
+    position: absolute;
+    top: 80px;
+    right: 10px;
+    width: 320px;  
+    max-height: 0px;
+    overflow:hidden;
+    transition: max-height 0.5s;
+
+
+}
+.sub-menu-wrap.open-menu{
+    max-height: 400px;
+}
+.sub-menu{
+    background: #eceaff;
+    padding: 20px;
+    margin: 10px;
+    border-radius: 10px;
+
+}
+.user-info{
+    display: flex;
+    align-items: center;
+}
+.user-info h2{
+    font-weight: 500;
+}
+.user-info img{
+    width: 60px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+.sub-menu hr{
+    border: 0;
+    height: 1px;
+    width: 100%;
+    background: #ccc;
+    margin: 15px 0 10px;
+}
+.sub-menu-link{
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #525252;
+    margin: 12px 0;
+}
+.sub-menu-link p{
+    width: 100%;
+
+}
+.sub-menu-link span{
+    font-size: 22px;
+    font-weight: 400;
+    transition: transform 0.5s;
+    
+}
+.sub-menu-link img{
+    width: 40px;
+    background: #e5e5e5;
+    border-radius: 50%;
+    padding: 5px;
+    margin-right: 15px;
+}
+.sub-menu-link:hover span{
+    transform: translateX(5px);
+}
+.sub-menu-link:hover p{
+    font-weight: 600;
+}
+
+
+/*edit page eke css part eka*/
+.Editpage{
+    position: relative;
+    width: 50%;
+    height: auto;
+    top: 30px;
+    left: 80px;
+    background-color: #eceaff;
+    border-radius: 10px;
+    max-height: 0px;
+    overflow:hidden;
+    transition: max-height 0.5s;
+
+}
+.Editpage.open-edit{
+    max-height: 1200px;
+}
+
+
+.edit-profile-container {
+    width: 100%;
+    max-width: 500px;
+    margin: 50px auto;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.edit-profile-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.edit-profile-form .form-group {
+    margin-bottom: 20px;
+}
+
+.edit-profile-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555;
+}
+
+.edit-profile-form input[type="text"],
+.edit-profile-form input[type="text"],
+.edit-profile-form input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: #333;
+}
+
+.edit-profile-form input[type="file"] {
+    display: none; /* Hide the file input */
+}
+
+.edit-profile-form .profile-pic-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.edit-profile-form .profile-pic-wrapper img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 20px;
+}
+
+.edit-profile-form .profile-pic-wrapper label {
+    cursor: pointer;
+    color: #007bff;
+    text-decoration: underline;
+}
+
+.edit-profile-form .btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+.edit-profile-form .btn2 {
+    width: 100%;
+    padding: 12px;
+    background-color: #bfc4c7;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.edit-profile-form .btn:hover {
+    background-color: #0056b3;
+}
+
+.edit-profile-form .btn2:hover{
+    background-color: #747070;
+}
+
+
+
+
+
+
+
+.settings-container {
+    position: relative;
+    width: 50%;
+    height: auto;
+    top: 30px;
+    left: 80px;
+    background-color: #eceaff;
+    border-radius: 10px;
+    text-align: center;
+    max-height: 0px;
+    overflow:hidden;
+    transition: max-height 0.5s;
+    
+    
+}
+.settings-container.open-settings{
+    max-height: 1200px;
+}
+
+.settings-container h2, .privacy-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.settings-form .form-group, .privacy-content h3 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.settings-form label, .privacy-content h3 {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555;
+}
+
+.settings-form input[type="password"],
+.settings-form select {
+    width: 50%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: #333;
+}
+
+.settings-form select {
+    appearance: none;
+    background: #ffffff;
+}
+
+.privacy-content p {
+    margin-bottom: 20px;
+    color: #333;
+    line-height: 1.6;
+}
+
+.privacy-content h3 {
+    
+    color: #007bff;
+}
+
+.btn {
+    width: 50%;
+    padding: 12px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+
+/*////////////////////////help and support/////////////////////////////////////////////////*/
+/* Common Container Styles */
+.help-support-container {
+    position: relative;
+    top: 30px;
+    left: 10px;
+    width: 60%;
+    height: auto;
+    max-width: 800px;
+    margin: 50px ;
+    background-color: #eceaff;
+   
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-height: 0px;
+    overflow:hidden;
+    transition: max-height 0.5s;
+}
+.help-support-container.open-helpsup{
+    max-height: 1200px;
+}
+
+.help-support-container h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* FAQ Section Styles */
+.faq-section h4 {
+    margin-bottom: 20px;
+    color: #007bff;
+}
+
+.faq-item {
+    margin-bottom: 20px;
+}
+
+.faq-item h5 {
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.faq-item p {
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Support Form Section Styles */
+.support-form-section h4 {
+    margin-bottom: 20px;
+    color: #007bff;
+}
+
+.support-form .form-group {
+    margin-bottom: 20px;
+}
+
+.support-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555;
+}
+
+.support-form textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: #333;
+    min-height: 100px;
+}
+
+.btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
