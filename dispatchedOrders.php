@@ -131,6 +131,7 @@
                                                         FROM salesOrders so
                                                         JOIN products p ON so.ProductID = p.ProductID
                                                         JOIN stores s ON so.StoreID = s.StoreID
+                                                        ORDER BY so.OrderDate DESC
                                                         LIMIT 13";
 
                                             //store results
