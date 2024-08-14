@@ -109,18 +109,20 @@
                                                 <th scope="col">Store Name</th>
                                                 <th scope="col">Quantity</th>
                                                 <th scope="col">Order Date</th>
+                                                <th scope="col">Operation</th>
+
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <?php
-                                                // connect to the database
-                                                include "Connect.php";
-                                                // Initialize search variable
-                                                //$search = isset($_GET['search']) ? $mysqli_real_escape_string($_GET['search']) : '';
 
-                                                //  query to select details about dispatched order
-                                                $sql = "SELECT 
+                                            <?php
+                                            // connect to the database
+                                            include "Connect.php";
+                                            // Initialize search variable
+                                            //$search = isset($_GET['search']) ? $mysqli_real_escape_string($_GET['search']) : '';
+
+                                            //  query to select details about dispatched order
+                                            $sql = "SELECT 
                                                         so.SalesOrderID,
                                                         p.ProductName,
                                                         s.StoreName,
@@ -128,40 +130,48 @@
                                                         so.OrderDate
                                                         FROM salesOrders so
                                                         JOIN products p ON so.ProductID = p.ProductID
-                                                        JOIN stores s ON s.StoreID
-                                                        LIMIT 17";
+                                                        JOIN stores s ON so.StoreID = s.StoreID
+                                                        LIMIT 13";
 
-                                                //store results
-                                                $result = mysqli_query($conn, $sql);
+                                            //store results
+                                            $result = mysqli_query($conn, $sql);
 
-                                                /* if (!empty($search)) {
+                                            /* if (!empty($search)) {
                                     $sql .= " WHERE Name LIKE '%$search%'";
                                 } */
 
-                                                if ($result) {
+                                            if ($result) {
 
-                                                    while ($row = mysqli_fetch_assoc($result)) {
-                                                        $saleOrderID = $row['SalesOrderID'];
-                                                        $productName = $row['ProductName'];
-                                                        $storeName = $row['StoreName'];
-                                                        $quantity = $row['Quantity'];
-                                                        $orderDate = $row['OrderDate'];
+                                                while ($row = mysqli_fetch_assoc($result)) {
+                                                    $saleOrderID = $row['SalesOrderID'];
+                                                    $productName = $row['ProductName'];
+                                                    $storeName = $row['StoreName'];
+                                                    $quantity = $row['Quantity'];
+                                                    $orderDate = $row['OrderDate'];
 
-                                                        echo '<tr>
+                                                    echo '<tr>
                                                         <td>' . $saleOrderID . '</td>
                                                         <td>' . $productName . '</td>
                                                         <td>' . $storeName . '</td>
                                                         <td>' . $quantity . '</td>                                                                                                             
                                                         <td>' . $orderDate . '</td>
+                                                        <td>
+                                                            <button type="button" class="btn btn-primary">
+                                                                <a href="orderUpdate.php" class="text-light">Update</a>
+                                                            </button>
+                                                            <button type="button" class="btn btn-danger">
+                                                                <a href="orderDelete.php?deleteID=' . $saleOrderID . '" class="text-light">Delete</a>
+                                                            </button>
+                                                        </td>
                                                         </tr>';
-                                                    }
-
-                                                    // Free result set
-                                                    mysqli_free_result($result);
                                                 }
-                                                // Close connection
-                                                mysqli_close($conn);
-                                                ?>
+
+                                                // Free result set
+                                                mysqli_free_result($result);
+                                            }
+                                            // Close connection
+                                            mysqli_close($conn);
+                                            ?>
                                         </tbody>
                                     </table>
                                 </div>
