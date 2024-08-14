@@ -9,6 +9,29 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="sketch.css">
+    <style>
+        /* CSS to ensure the sidebar stays fixed while scrolling */
+        #sidebar {
+            position: fixed;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            width: 250px; /* Adjust as needed */
+        }
+
+        main {
+            margin-left: 250px; /* Should match the width of the sidebar */
+        }
+
+        .fade-away {
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .fade-away.hide {
+            opacity: 0;
+        }
+    </style>
 </head>
 
 <body>
@@ -49,7 +72,7 @@
                             <a class="nav-link" href="#"><i class="material-icons">local_shipping</i>Suppliers</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons md-18">report</i>Reports</a>
+                            <a class="nav-link" href="#"><i class="material-icons md-18">report</i>Store</a>
                         </li>
                     </ul>
                     <!-- Logout link at the bottom of the sidebar -->
@@ -61,7 +84,6 @@
 
             <!-- Main content area -->
             <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-
                 <!-- Header for the main content with title and user information -->
                 <div
                     class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -114,15 +136,15 @@
                             $stmt = $conn->prepare("UPDATE Inventory SET TotalQuantity = ?, TotalValue = ? WHERE ProductID = ?");
                             $stmt->bind_param("idi", $newQuantity, $newTotalValue, $productID);
                             if ($stmt->execute()) {
-                                echo "<div class='alert alert-success' role='alert'>Inventory updated successfully!</div>";
+                                echo "<div class='alert alert-success fade-away' role='alert'>Inventory updated successfully!</div>";
                             } else {
-                                echo "<div class='alert alert-danger' role='alert'>Error updating inventory: " . $stmt->error . "</div>";
+                                echo "<div class='alert alert-danger fade-away' role='alert'>Error updating inventory: " . $stmt->error . "</div>";
                             }
                         } else {
-                            echo "<div class='alert alert-warning' role='alert'>Quantity to remove exceeds current inventory.</div>";
+                            echo "<div class='alert alert-warning fade-away' role='alert'>Quantity to remove exceeds current inventory.</div>";
                         }
                     } else {
-                        echo "<div class='alert alert-danger' role='alert'>Product not found in inventory.</div>";
+                        echo "<div class='alert alert-danger fade-away' role='alert'>Product not found in inventory.</div>";
                     }
 
                     $stmt->close();
@@ -194,7 +216,6 @@
                         <tbody id="inventoryTableBody">
                             <?php
                             if ($result->num_rows > 0) {
-                                // Output data of each row
                                 while ($row = $result->fetch_assoc()) {
                                     echo "<tr>";
                                     echo "<td>" . $row["ProductID"] . "</td>";
@@ -205,94 +226,98 @@
                                     echo "<td>" . $row["TotalQuantity"] . "</td>";
                                     echo "<td>" . $row["LastReceivedDate"] . "</td>";
                                     echo "<td>" . $row["TotalValue"] . "</td>";
-                                    echo "<td><button class='btn btn-warning' onclick='openUpdateModal(" . $row["ProductID"] . ", " . $row["TotalQuantity"] . ")'>Update Quantity</button></td>";
+                                    echo "<td><button class='btn btn-danger' onclick='showRemoveModal(" . $row["ProductID"] . ")'>Remove</button></td>";
                                     echo "</tr>";
                                 }
-                            } else {
-                                echo "<tr><td colspan='9'>No records found.</td></tr>";
                             }
                             ?>
                         </tbody>
                     </table>
-                </div>
 
-                <!-- Modal for Updating Quantity -->
-                <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="updateModalLabel">Update Quantity</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="updateForm" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" onsubmit="return confirmUpdate()">
-                                    <input type="hidden" name="productID" id="productID">
-                                    <div class="mb-3">
-                                        <label for="quantity" class="form-label">Quantity to Remove:</label>
-                                        <input type="number" class="form-control" id="quantity" name="quantity" required>
-                                    </div>
-                                    <button type="submit" name="updateQuantity" class="btn btn-primary">Update</button>
-                                </form>
+                    <!-- Modal for removing quantity -->
+                    <div class="modal fade" id="removeModal" tabindex="-1" aria-labelledby="removeModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="removeModalLabel">Remove Quantity</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form method="post" id="removeForm">
+                                        <input type="hidden" name="productID" id="productID">
+                                        <div class="mb-3">
+                                            <label for="quantity" class="form-label">Quantity to Remove</label>
+                                            <input type="number" class="form-control" id="quantity" name="quantity" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-danger" name="updateQuantity">Remove</button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </main>
         </div>
     </div>
 
-    <!-- Script to filter table based on Brand and Type -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
     <script>
-        function filterTable() {
-            const brandFilter = document.getElementById('filterBrand').value.toLowerCase();
-            const typeFilter = document.getElementById('filterType').value.toLowerCase();
-            const rows = document.getElementById('inventoryTableBody').getElementsByTagName('tr');
-
-            for (const row of rows) {
-                const brand = row.cells[2].innerText.toLowerCase();
-                const type = row.cells[3].innerText.toLowerCase();
-
-                if ((brandFilter === '' || brand.includes(brandFilter)) &&
-                    (typeFilter === '' || type.includes(typeFilter))) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
+        document.addEventListener('DOMContentLoaded', (event) => {
+            // Function to show the remove modal with the correct Product ID
+            window.showRemoveModal = function (productID) {
+                document.getElementById('productID').value = productID;
+                var removeModal = new bootstrap.Modal(document.getElementById('removeModal'));
+                removeModal.show();
             }
-        }
 
-        // Script to search the table
-        function searchTable() {
-            const searchInput = document.getElementById('searchInput').value.toLowerCase();
-            const rows = document.getElementById('inventoryTableBody').getElementsByTagName('tr');
+            // Function to filter the table by brand and type
+            window.filterTable = function () {
+                var brand = document.getElementById('filterBrand').value.toLowerCase();
+                var type = document.getElementById('filterType').value.toLowerCase();
+                var rows = document.querySelectorAll('#inventoryTableBody tr');
 
-            for (const row of rows) {
-                const productName = row.cells[1].innerText.toLowerCase();
-                if (productName.includes(searchInput)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
+                rows.forEach(row => {
+                    var rowBrand = row.children[2].textContent.toLowerCase();
+                    var rowType = row.children[3].textContent.toLowerCase();
+
+                    if ((brand === '' || rowBrand.includes(brand)) &&
+                        (type === '' || rowType.includes(type))) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
             }
-        }
 
-        // Script to open the update modal and populate with product data
-        function openUpdateModal(productID, currentQuantity) {
-            document.getElementById('productID').value = productID;
-            document.getElementById('quantity').max = currentQuantity;
-            var updateModal = new bootstrap.Modal(document.getElementById('updateModal'));
-            updateModal.show();
-        }
+            // Function to search the table
+            window.searchTable = function () {
+                var input = document.getElementById('searchInput').value.toLowerCase();
+                var rows = document.querySelectorAll('#inventoryTableBody tr');
 
-        // Script to confirm the update action
-        function confirmUpdate() {
-            return confirm("Are you sure you want to update the quantity?");
-        }
+                rows.forEach(row => {
+                    var cells = row.getElementsByTagName('td');
+                    var found = Array.from(cells).some(cell => cell.textContent.toLowerCase().includes(input));
+
+                    row.style.display = found ? '' : 'none';
+                });
+            }
+
+            // Function to handle alert fading away
+            function fadeAlerts() {
+                var alerts = document.querySelectorAll('.alert');
+                alerts.forEach(alert => {
+                    setTimeout(() => {
+                        alert.classList.add('hide');
+                        setTimeout(() => alert.remove(), 500); // Remove after fade-out
+                    }, 3000); // Adjust delay as needed
+                });
+            }
+
+            fadeAlerts();
+        });
     </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
