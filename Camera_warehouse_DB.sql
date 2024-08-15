@@ -18,11 +18,11 @@ CREATE TABLE Suppliers (
   ContactEmail VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE Stores (
-  StorerID INT AUTO_INCREMENT PRIMARY KEY,
-  StoreName VARCHAR(100) NOT NULL,
-  Location VARCHAR(100)  NOT NULL,
-  ContactEmail VARCHAR(100) NOT NULL
+CREATE TABLE shop (
+    ShopID INT(4) AUTO_INCREMENT PRIMARY KEY,
+    Man_name VARCHAR(20) NOT NULL,
+    Address VARCHAR(30) NOT NULL,
+    SEmail VARCHAR(20) NOT NULL
 );
 
 CREATE TABLE Products (
@@ -38,7 +38,7 @@ CREATE TABLE DispatchOrders (
   DispatchOrderID INT AUTO_INCREMENT PRIMARY KEY,
   ProductID INT,
   Quantity INT,
-  TotalAmount DECIMAL(10, 2),
+  UnitPrice DECIMAL(10, 2),
   OrderDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (ProductID) REFERENCES products(ProductID)
 );
@@ -65,4 +65,12 @@ CREATE TABLE Inventory (
   TotalQuantity INT,
   LastReceivedDate TIMESTAMP,
   TotalValue DECIMAL(10, 2)
+);
+
+CREATE TABLE productreceiveddate (
+    PurchaseOrderID  INT(11),
+    DateReceived     TIMESTAMP,
+    quantity         INT(50),
+    PRIMARY KEY (PurchaseOrderID, DateReceived),
+    FOREIGN KEY (PurchaseOrderID) REFERENCES purchaseorders(PurchaseOrderID)
 );
