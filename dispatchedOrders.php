@@ -123,11 +123,7 @@
 
                                             //  query to select details about dispatched order
                                             $sql = "SELECT 
-                                                        so.SalesOrderID,
-                                                        p.ProductName,
-                                                        s.StoreName,
-                                                        so.Quantity,                                                       
-                                                        so.OrderDate
+                                                        so.SalesOrderID, p.ProductName, s.StoreName, so.Quantity, so.OrderDate
                                                         FROM salesOrders so
                                                         JOIN products p ON so.ProductID = p.ProductID
                                                         JOIN stores s ON so.StoreID = s.StoreID
@@ -158,10 +154,10 @@
                                                         <td>' . $orderDate . '</td>
                                                         <td>
                                                             <button type="button" class="btn btn-primary">
-                                                                <a href="orderUpdate.php" class="text-light">Update</a>
+                                                                <a href="orderUpdate.php?updateID=' . $saleOrderID . '" class="text-light link-offset-2 link-underline link-underline-opacity-0">Update</a>
                                                             </button>
                                                             <button type="button" class="btn btn-danger">
-                                                                <a href="orderDelete.php?deleteID=' . $saleOrderID . '" class="text-light">Delete</a>
+                                                                <a href="orderDelete.php?deleteID=' . $saleOrderID . '" class="text-light link-offset-2 link-underline link-underline-opacity-0">Delete</a>
                                                             </button>
                                                         </td>
                                                         </tr>';
