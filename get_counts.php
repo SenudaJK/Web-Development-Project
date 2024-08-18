@@ -16,12 +16,20 @@ try {
     $stmt = $pdo->query("SELECT SUM(Quantity) AS count FROM `dispatchorders`");
     $dispatchQuantityCount = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
 
+    $stmt = $pdo->query("SELECT COUNT(*) as count FROM shop");
+    $storesCount = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+
+    $stmt = $pdo->query("SELECT COUNT(*) AS count FROM PurchaseOrders WHERE Status != 'delivered'");
+    $ordersNotReceivedCount = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+
     // Return the counts as JSON
     echo json_encode([
         'categories' => $categoriesCount,
         'suppliers' => $suppliersCount,
         'inventoryvalues' => $inventoryvaluesCount,
-        'dispatchquantity' => $dispatchQuantityCount
+        'dispatchquantity' => $dispatchQuantityCount,
+        'storescount' => $storesCount,
+        'yetReceived' => $ordersNotReceivedCount
     ]);
 } catch (PDOException $e) {
     echo json_encode(['error' => $e->getMessage()]);
