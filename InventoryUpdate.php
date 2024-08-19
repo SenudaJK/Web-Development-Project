@@ -23,7 +23,6 @@ $role = $_SESSION['role'];
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <style>
-
         .fade-away {
             opacity: 1;
             transition: opacity 0.5s ease-out;
@@ -55,22 +54,26 @@ $role = $_SESSION['role'];
                     <!-- Sidebar navigation links -->
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link active" href="dashboard.php"><i class="material-icons">home</i>Dashboard</a>
+                            <a class="nav-link active" href="dashboard.php"><i
+                                    class="material-icons">home</i>Dashboard</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="InventoryUpdate.php"><i class="material-icons">inventory</i>Inventory</a>
+                            <a class="nav-link" href="InventoryUpdate.php"><i
+                                    class="material-icons">inventory</i>Inventory</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="productGet.php"><i class="material-icons">category</i>Products</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="purchaseView.php"><i class="material-icons">shopping_cart</i>Purchase Orders</a>
+                            <a class="nav-link" href="purchaseView.php"><i
+                                    class="material-icons">shopping_cart</i>Purchase Orders</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#"><i class="material-icons">sell</i>Dispatch Orders</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="suppliers.php"><i class="material-icons">local_shipping</i>Suppliers</a>
+                            <a class="nav-link" href="suppliers.php"><i
+                                    class="material-icons">local_shipping</i>Suppliers</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="shopIndex.php"><i class="material-icons md-18">store</i>Shops</a>
@@ -151,6 +154,8 @@ $role = $_SESSION['role'];
                     $stmt->close();
                 }
 
+
+
                 // Fetch data from Inventory
                 $sql = "SELECT * FROM Inventory";
                 $result = $conn->query($sql);
@@ -167,8 +172,9 @@ $role = $_SESSION['role'];
                 $typeResult = $conn->query($typeSql);
                 ?>
 
-                 <div class="container mt-5">
-                    <h2 class="text-center">Inventory Management</h2>
+                <div class="container mt-5">
+                    <button id="downloadCSV" class="btn btn-primary me-2 mr-5" style="margin-bottom: 1rem;">Download CSV
+                        Report</button>
 
                     <!-- Filters -->
                     <div class="d-flex mb-3">
@@ -199,72 +205,76 @@ $role = $_SESSION['role'];
                     <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="Search for products..."
                         class="form-control mb-3">
 
+
+
                     <div style="height: 390px; overflow-y: auto;">
-                    <!-- Inventory Table -->
-                    <table class="table table-striped table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Product ID</th>
-                                <th>Product Name</th>
-                                <th>Brand</th>
-                                <th>Type</th>
-                                <th>SKU</th>
-                                <th>Total Quantity</th>
-                                <th>Last Received Date</th>
-                                <th>Total Value</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="inventoryTableBody">
-                            <?php
-                            if ($result->num_rows > 0) {
-                                while ($row = $result->fetch_assoc()) {
-                                    
-                                    echo "<tr>";
-                                    echo "<td>" . htmlspecialchars($row["ProductID"] ) . "</td>";
-                                    echo "<td>" . htmlspecialchars($row["ProductName"])  . "</td>";
-                                    echo "<td>" . htmlspecialchars($row["Brand"])  . "</td>";
-                                    echo "<td>" . htmlspecialchars($row["Type"])  . "</td>";
-                                    echo "<td>" . htmlspecialchars($row["SKU"])  . "</td>";
-                                    echo "<td>" . htmlspecialchars($row["TotalQuantity"])  . "</td>";
-                                    echo "<td>" . htmlspecialchars($row["LastReceivedDate"])  . "</td>";
-                                    echo "<td>" . htmlspecialchars($row["TotalValue"])  . "</td>";
-                                    echo "<td><button class='btn btn-danger' onclick='showRemoveModal(" . $row["ProductID"] . ", \"" . htmlspecialchars($row["ProductName"]) . "\")'>Remove</button></td>";
-                                    echo "</tr>";
+                        <!-- Inventory Table -->
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Product ID</th>
+                                    <th>Product Name</th>
+                                    <th>Brand</th>
+                                    <th>Type</th>
+                                    <th>SKU</th>
+                                    <th>Total Quantity</th>
+                                    <th>Last Received Date</th>
+                                    <th>Total Value</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventoryTableBody">
+                                <?php
+                                if ($result->num_rows > 0) {
+                                    while ($row = $result->fetch_assoc()) {
+
+                                        echo "<tr>";
+                                        echo "<td>" . htmlspecialchars($row["ProductID"]) . "</td>";
+                                        echo "<td>" . htmlspecialchars($row["ProductName"]) . "</td>";
+                                        echo "<td>" . htmlspecialchars($row["Brand"]) . "</td>";
+                                        echo "<td>" . htmlspecialchars($row["Type"]) . "</td>";
+                                        echo "<td>" . htmlspecialchars($row["SKU"]) . "</td>";
+                                        echo "<td>" . htmlspecialchars($row["TotalQuantity"]) . "</td>";
+                                        echo "<td>" . htmlspecialchars($row["LastReceivedDate"]) . "</td>";
+                                        echo "<td>" . htmlspecialchars($row["TotalValue"]) . "</td>";
+                                        echo "<td><button class='btn btn-danger' onclick='showRemoveModal(" . $row["ProductID"] . ", \"" . htmlspecialchars($row["ProductName"]) . "\")'>Remove</button></td>";
+                                        echo "</tr>";
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='9'>No records found.</td></tr>";
                                 }
-                            } else {
-                                echo "<tr><td colspan='9'>No records found.</td></tr>";
-                            }
-                            ?>
-                        </tbody>
-                    </table>
+                                ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                    <!-- Modal for removing quantity -->
-                    <div class="modal fade" id="removeModal" tabindex="-1" aria-labelledby="removeModalLabel"
-                        aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="removeModalLabel">Remove Quantity</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form method="post" id="removeForm">
-                                        <input type="hidden" name="productID" id="productID">
-                                        <div class="mb-3">
-                                            <label for="quantity" class="form-label">Quantity to Remove</label>
-                                            <input type="number" class="form-control" id="quantity" name="quantity" required>
-                                        </div>
-                                        <button type="submit" class="btn btn-danger" name="updateQuantity">Remove</button>
-                                    </form>
-                                </div>
+                <!-- Modal for removing quantity -->
+                <div class="modal fade" id="removeModal" tabindex="-1" aria-labelledby="removeModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="removeModalLabel">Remove Quantity</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="post" id="removeForm">
+                                    <input type="hidden" name="productID" id="productID">
+                                    <div class="mb-3">
+                                        <label for="quantity" class="form-label">Quantity to Remove</label>
+                                        <input type="number" class="form-control" id="quantity" name="quantity"
+                                            required>
+                                    </div>
+                                    <button type="submit" class="btn btn-danger" name="updateQuantity">Remove</button>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
-            </main>
         </div>
+        </main>
+    </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
@@ -323,6 +333,10 @@ $role = $_SESSION['role'];
 
             fadeAlerts();
         });
+
+        document.getElementById('downloadCSV').addEventListener('click', function () {
+            window.location.href = 'inventoryCSV.php';
+        })
     </script>
 </body>
 
