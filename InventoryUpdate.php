@@ -167,7 +167,8 @@ $role = $_SESSION['role'];
                 $typeResult = $conn->query($typeSql);
                 ?>
 
-                <div class="container mt-5">
+                 <div class="container mt-5">
+                    <h2 class="text-center">Inventory Management</h2>
 
                     <!-- Filters -->
                     <div class="d-flex mb-3">
@@ -198,7 +199,7 @@ $role = $_SESSION['role'];
                     <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="Search for products..."
                         class="form-control mb-3">
 
-                    <div style="height: 300px; overflow-y: auto;">
+                    <div style="height: 390px; overflow-y: auto;">
                     <!-- Inventory Table -->
                     <table class="table table-striped table-bordered">
                         <thead>
@@ -236,9 +237,9 @@ $role = $_SESSION['role'];
                             }
                             ?>
                         </tbody>
-                        
                     </table>
                     </div>
+                </div>
                     <!-- Modal for removing quantity -->
                     <div class="modal fade" id="removeModal" tabindex="-1" aria-labelledby="removeModalLabel"
                         aria-hidden="true">
