@@ -49,7 +49,7 @@ CREATE TABLE PurchaseOrders (
   ProductID INT,
   QuantityOrdered INT,
   QuantityRecieved INT,
-  TotalAmount DECIMAL(10, 2),
+  UnitPrice DECIMAL(10, 2),
   Status VARCHAR(50),
   OrderDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (SupplierID) REFERENCES Suppliers(SupplierID),
