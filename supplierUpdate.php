@@ -12,7 +12,7 @@ $username = $_SESSION['username'];
 $role = $_SESSION['role'];
 
 // Include config file
-require_once "config.php";
+require_once "Config.php";
  
 // Define variables and initialize with empty values
 $name = $location = $email = "";
@@ -74,7 +74,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
             // Attempt to execute the prepared statement
             if($stmt->execute()){
                 // Records updated successfully. Redirect to landing page
-                header("location: supplierIndex.php");
+                header("location: suppliers.php");
                 exit();
             } else{
                 echo "Oops! Something went wrong. Please try again later.";
@@ -200,7 +200,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                             <a class="nav-link" href="#"><i class="material-icons">sell</i>Dispatch Orders</a>                            
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="supplierIndex.php"><i class="material-icons">local_shipping</i>Suppliers</a>
+                            <a class="nav-link" href="suppliers.php"><i class="material-icons">local_shipping</i>Suppliers</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="shopIndex.php"><i class="material-icons md-18">store</i>Shops</a>
@@ -247,7 +247,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                                 </div><br>
                                 <input type="hidden" name="id" value="<?php echo $id; ?>"/>
                                 <input type="submit" class="btn btn-primary" value="Submit">
-                                <a href="supplierIndex.php" class="btn btn-secondary ml-2">Cancel</a>
+                                <a href="suppliers.php" class="btn btn-secondary ml-2">Cancel</a>
                             </form>
                         </div>
                     </div>        
