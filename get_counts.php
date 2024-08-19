@@ -19,7 +19,7 @@ try {
     $stmt = $pdo->query("SELECT COUNT(*) as count FROM shop");
     $storesCount = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
 
-    $stmt = $pdo->query("SELECT COUNT(*) AS count FROM PurchaseOrders WHERE Status != 'delivered'");
+    $stmt = $pdo->query("SELECT COUNT(*) AS count FROM PurchaseOrders WHERE Status != 'Complete'");
     $ordersNotReceivedCount = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
 
     // Return the counts as JSON

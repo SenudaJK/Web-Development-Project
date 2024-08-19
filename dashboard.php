@@ -23,20 +23,18 @@ $role = $_SESSION['role'];
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <style>
+        
         .panel{
             height: 20vh;
             background-color: #77B0AA;
             border: 2px outset black;
         }
 
-        #username{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: black;
-            text-decoration: none;    
+        .panel:hover {
+            transform: translateY(-5px);
+            transition: 0.3s;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         }
-
 
     </style>
 </head>
@@ -82,7 +80,7 @@ $role = $_SESSION['role'];
                     </ul>
                     <!-- Logout link at the bottom of the sidebar -->
                     <div class="logout">
-                        <a href="#"><i class="material-icons">logout</i>Log out</a>
+                        <a href="logout.php"><i class="material-icons">logout</i>Log out</a>
                     </div>
                 </div>
             </nav>
@@ -141,7 +139,8 @@ $role = $_SESSION['role'];
                             data: {
                                 labels: [], // Initially empty
                                 datasets: [{
-                                    backgroundColor: ["red", "green", "blue", "orange", "brown", "purple"], // Example colors
+                                    backgroundColor: ["#FF5733", "#33FF57", "#3357FF", "#FF33A6", "#FFD133", "#33FFF5", "#FF8C33", "#8C33FF", 
+                                    "#FF3333", "#33FFB8", "#336BFF", "#FF3388", "#FF5733", "#FF9A33", "#A833FF", "#33FF77", "#FF33FF", "#FF5733", "#33B8FF", "#FF33D1"], // Example colors
                                     data: [] // Initially empty
                                 }]
                             },
