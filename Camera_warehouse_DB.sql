@@ -74,3 +74,31 @@ CREATE TABLE productreceiveddate (
     PRIMARY KEY (PurchaseOrderID, DateReceived),
     FOREIGN KEY (PurchaseOrderID) REFERENCES purchaseorders(PurchaseOrderID)
 );
+
+DELIMITER $$
+
+CREATE PROCEDURE UpdateInventory()
+BEGIN
+    INSERT INTO Inventory (ProductID, ProductName, Brand, Type, SKU, TotalQuantity, LastReceivedDate, TotalValue)
+    SELECT 
+        p.ProductID,
+        p.ProductName,
+        p.Brand,
+        p.Type,
+        p.SKU,
+        SUM(po.QuantityRecieved) AS TotalQuantity,
+        MAX(po.OrderDate) AS LastReceivedDate,
+        SUM(po.QuantityRecieved * po.UnitPrice) AS TotalValue
+    FROM 
+        PurchaseOrders po
+    JOIN 
+        Products p ON po.ProductID = p.ProductID
+    GROUP BY 
+        p.ProductID, p.ProductName, p.Brand, p.Type, p.SKU
+    ON DUPLICATE KEY UPDATE 
+        TotalQuantity = VALUES(TotalQuantity),
+        LastReceivedDate = VALUES(LastReceivedDate),
+        TotalValue = VALUES(TotalValue);
+END$$
+
+DELIMITER ;
