@@ -1,3 +1,16 @@
+<?php
+session_start(); // Start session
+
+// Check if the user is logged in, if not redirect to login page
+if (!isset($_SESSION['username'])) {
+    header("Location: index.html");
+    exit();
+}
+
+$username = $_SESSION['username'];
+$role = $_SESSION['role'];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -87,10 +100,9 @@
                     class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">More Indormation</h1>
                     <div class="text-right">
-                        <div id="username-container">
-                            <a id="username" href="#"><i class="material-icons"
-                                    style="font-size:48px;">account_circle</i>Username</a>
-                            <span>Role</span>
+                    <div id="username-container">
+                            <a id="username" href="#"><i class="material-icons" style="font-size:48px;">account_circle</i><?php echo htmlspecialchars($username); ?></a>
+                            <!-- <span><?php echo htmlspecialchars($role); ?></span> -->
                         </div>
                     </div>
                 </div>
