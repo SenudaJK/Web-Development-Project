@@ -110,10 +110,14 @@ $role = $_SESSION['role'];
                 <!-- Search bar with real-time filtering -->
                 <div class ="display_table" >
                 
-                <a href="purchaseOrder.php" class="btn btn-success" ><i class="fa fa-plus"></i> Add New Purchase</a><br><br>
+                <a href="purchaseOrder.php" class="btn btn-success" ><i class="fa fa-plus"></i> Add New Purchase</a>
+                <button id="downloadCSV" class="btn btn-primary me-2 mr-5">Download CSV Report</button> <br><br>
                 <div class="input-group mb-5">
                     <input type="text" id="search" class="form-control" placeholder="Search by Product Name or Supplier Name" oninput="filterResults()">
+                    
+
                 </div>
+                
                 <?php
                     // Include config file
                     require_once "config.php";
@@ -159,7 +163,7 @@ $role = $_SESSION['role'];
                                             if ($role !== 'Worker') {
                                                 // If the role is not 'worker', display the active links
                                                 echo '<a href="purchaseRead.php?id='. $row['PurchaseOrderID'] .'" class="mr-2" title="View more information" data-toggle="tooltip"><span class="fa fa-eye"></span></a>';echo "&nbsp&nbsp";
-                                                echo '<a href="purchaseUpdate.php?id='. $row['PurchaseOrderID'] .'" class="mr-2" title="Update Quantity & Status" data-toggle="tooltip"><span class="fa fa-pencil"></span></a>';
+                                            echo '<a href="purchaseUpdate.php?id='. $row['PurchaseOrderID'] .'" class="mr-2" title="Update Quantity & Status" data-toggle="tooltip"><span class="fa fa-pencil"></span></a>';
                                             } else {
                                                 // If the role is 'worker', display disabled icons without links
                                                 echo "<i class='fa fa-eye fs-5 me-3' style='color: gray; cursor: not-allowed;' title='View (disabled)'></i>";
@@ -219,7 +223,12 @@ $role = $_SESSION['role'];
             rows[i].style.display = "none";
         }
     }
-}
+} 
+
+document.getElementById('downloadCSV').addEventListener('click', function() {
+                        window.location.href = 'purchaseCSV.php';
+                    })
+
 
     </script>
 </body>
