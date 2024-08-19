@@ -158,8 +158,8 @@ $role = $_SESSION['role'];
                                             
                                             if ($role !== 'Worker') {
                                                 // If the role is not 'worker', display the active links
-                                                echo "<a href='purchaseRead.php?id=" . $row['PurchaseOrderID'] . "' class='link-dark'><i class='fa-solid fa-pen-to-square fs-5 me-3'></i></a>";
-                                                echo "<a href='purchaseUpdate.php?id=" . $row['PurchaseOrderID'] . "' class='link-dark'><i class='fa-solid fa-trash fs-5'></i></a>";
+                                                echo '<a href="purchaseRead.php?id='. $row['PurchaseOrderID'] .'" class="mr-2" title="View more information" data-toggle="tooltip"><span class="fa fa-eye"></span></a>';echo "&nbsp&nbsp";
+                                                echo '<a href="purchaseUpdate.php?id='. $row['PurchaseOrderID'] .'" class="mr-2" title="Update Quantity & Status" data-toggle="tooltip"><span class="fa fa-pencil"></span></a>';
                                             } else {
                                                 // If the role is 'worker', display disabled icons without links
                                                 echo "<i class='fa fa-eye fs-5 me-3' style='color: gray; cursor: not-allowed;' title='View (disabled)'></i>";
