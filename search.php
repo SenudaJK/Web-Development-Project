@@ -10,9 +10,12 @@ if (isset($_GET['input'])) {
             FROM salesOrders so
             JOIN products p ON so.ProductID = p.ProductID
             JOIN stores s ON so.StoreID = s.StoreID
-            WHERE p.ProductName LIKE '%$input%'
-            ORDER BY so.OrderDate DESC
-            LIMIT 13";
+            WHERE so.SalesOrderID LIKE '%$input%' OR 
+            p.ProductName LIKE '%$input%' OR 
+            s.StoreName LIKE '%$input%' OR 
+            so.Quantity LIKE '%$input%' OR 
+            so.OrderDate LIKE '%$input%'
+            ORDER BY so.OrderDate DESC";
     $result = mysqli_query($conn, $sql);
     if (!$result || mysqli_num_rows($result) == 0) {
         echo "No order Found.";
@@ -45,11 +48,15 @@ if (isset($_GET['input'])) {
                     <td>' . $quantity . '</td>                                                                                                             
                     <td>' . $orderDate . '</td>
                     <td>
-                        <button type="button" class="btn btn-primary">
-                            <a href="orderUpdate.php?updateID=' . $saleOrderID . '" class="text-light link-offset-2 link-underline link-underline-opacity-0">Update</a>
+                        <button type="button" class="btn btn-link">
+                            <a href="orderUpdate.php?updateID=' . $saleOrderID . '" class="text-dark link-offset-2 link-underline link-underline-opacity-0">
+                                <i class="material-icons">edit</i>
+                            </a>
                         </button>
-                        <button type="button" class="btn btn-danger">
-                            <a href="orderDelete.php?deleteID=' . $saleOrderID . '" class="text-light link-offset-2 link-underline link-underline-opacity-0">Delete</a>
+                        <button type="button" class="btn btn-link">
+                            <a href="orderDelete.php?deleteID=' . $saleOrderID . '" class="text-dark link-offset-2 link-underline link-underline-opacity-0">
+                                <i class="material-icons">delete</i>
+                            </a>
                         </button>
                     </td>
                     </tr>';

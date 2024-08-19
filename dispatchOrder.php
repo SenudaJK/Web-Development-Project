@@ -1,28 +1,7 @@
 <?php
+
 //connect to the database
 include 'Connect.php';
-
-$updateID = $_GET['updateID'];
-
-//to fill form with already assigned values
-$sqlFill = "SELECT
-            p.ProductName, s.StoreName, so.Quantity                                                       
-            FROM salesOrders so
-            JOIN products p ON so.ProductID = p.ProductID
-            JOIN stores s ON so.StoreID = s.StoreID
-            WHERE SalesOrderID = '$updateID'";
-$resultFill = mysqli_query($conn, $sqlFill);
-
-if (!$resultFill) {
-    echo "Something went wrong. Please try again later";
-    //used for debugging purposes
-    //die("Error executing query: " . mysqli_error($conn));
-}
-
-$rowFill = mysqli_fetch_assoc($resultFill);
-$fillProductName = $rowFill['ProductName'];
-$fillStoreName = $rowFill['StoreName'];
-$fillQuantity = $rowFill['Quantity'];
 
 //get data from html
 if (isset($_POST['confirm'])) {
@@ -47,12 +26,11 @@ if (isset($_POST['confirm'])) {
         //die("Error executing query: " . mysqli_error($conn));
     }
 
-    if (mysqli_num_rows($result)) {
+    if (mysqli_num_rows($result) > 0) {
         //fetch an item from result
         $row = mysqli_fetch_assoc($result);
         $productID = $row['ProductID'];
 
-        //get StoreID using StoreName
         $sqlStore = "SELECT StoreID 
                     FROM stores 
                     WHERE StoreName = '$storeName'";
@@ -92,12 +70,8 @@ if (isset($_POST['confirm'])) {
             }
 
             // Insert dispatch order data into the salesOrder table
-            $sqlInsertQuery = "UPDATE salesorders
-                                SET ProductID = '$productID',
-                                StoreID = '$storeID',
-                                Quantity = '$quantity',
-                                OrderDate = NOW()
-                                WHERE SalesOrderID = '$updateID'";
+            $sqlInsertQuery = "INSERT INTO salesorders (ProductID, StoreID, quantity, orderDate)
+                               VALUES ('$productID', '$storeID', '$quantity', NOW())";
 
             //display whether order is successfully dispatched or not
             if (mysqli_query($conn, $sqlInsertQuery)) {
@@ -108,7 +82,7 @@ if (isset($_POST['confirm'])) {
                                       WHERE ProductID = '$productID'";
                 $resultUpdateQuantity = mysqli_query($conn, $sqlUpdateQuantity);
                 if ($resultUpdateQuantity) {
-                    //echo "Order placed successfully!";
+                    echo "Order placed successfully!";
                     header('location: dispatchedOrders.php');
                 } else {
                     echo "Can not update inventory now. Try again later.";
@@ -124,6 +98,7 @@ if (isset($_POST['confirm'])) {
     }
 }
 mysqli_close($conn);
+
 ?>
 
 <!DOCTYPE html>
@@ -144,7 +119,7 @@ mysqli_close($conn);
 <body>
     <div class="container">
         <div class="mb-3">
-            <h2>Update dispatch order</h2>
+            <h2>Dispatch order</h2>
         </div>
         <form method="post">
             <div class="mb-3">
@@ -154,7 +129,6 @@ mysqli_close($conn);
                     class="form-control"
                     id="product-name"
                     name="product-name"
-                    value="<?php echo htmlspecialchars($fillProductName); ?>"
                     placeholder="Search Product"
                     required />
                 <div class="product-list" id="product-list"></div>
@@ -167,7 +141,6 @@ mysqli_close($conn);
                     class="form-control"
                     id="store-name"
                     name="store-name"
-                    value="<?php echo htmlspecialchars($fillStoreName); ?>"
                     placeholder="Search Store"
                     required />
                 <div class="store-list" id="store-list"></div>
@@ -180,7 +153,6 @@ mysqli_close($conn);
                     class="form-control"
                     id="quantity"
                     name="quantity"
-                    value="<?php echo htmlspecialchars($fillQuantity); ?>"
                     placeholder="Enter Product Quantity"
                     min="1"
                     required />
@@ -188,13 +160,15 @@ mysqli_close($conn);
 
             <div class="mt-4">
                 <button type="submit"
-                    id="update-btn"
                     name="confirm"
+                    id="confirm-btn"
                     class="btn btn-primary">
-                    Update
+                    Confirm
                 </button>
                 <button type="button" class="btn btn-secondary">
-                    <a href="dispatchedOrders.php" class="text-light link-offset-2 link-underline link-underline-opacity-0">Cancel</a>
+                    <a
+                        href="dispatchedOrders.php"
+                        class="text-light link-offset-2 link-underline link-underline-opacity-0">Cancel</a>
                 </button>
             </div>
         </form>
@@ -211,12 +185,12 @@ mysqli_close($conn);
         //validate quantity
         $(document).ready(function() {
             $("#quantity").on("input", function() {
-                var value = $(this).val()
+                var value = $(this).val();
                 if (value < 1) {
-                    $(this).val('')
+                    $(this).val("");
                 }
-            })
-        })
+            });
+        });
     </script>
     <script>
         //validate all inputs
@@ -227,9 +201,9 @@ mysqli_close($conn);
                 var quantity = $("#quantity").val().trim();
 
                 if (productName == "" || storeName == "" || quantity < 1) {
-                    $("#update-btn").attr("disabled", true);
+                    $("#confirm-btn").attr("disabled", true);
                 } else {
-                    $("#update-btn").attr("disabled", false);
+                    $("#confirm-btn").attr("disabled", false);
                 }
             }
             $("#product-name, #store-name, #quantity").on("input", function() {

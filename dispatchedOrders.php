@@ -1,3 +1,8 @@
+<?php
+session_start();
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -79,6 +84,36 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- show alert messages -->
+                <?php
+                if (isset($_SESSION['status']) && isset($_SESSION['operation'])) {
+                    $status = $_SESSION['status'];
+                    $operation = $_SESSION['operation'];
+                    if ($status == 'success') {
+                        $alertClass = "alert-success";
+                    } else {
+                        $alertClass = "alert-danger";
+                    }
+
+                    if ($status == 'success') {
+                        $message = "Order deleted successfully";
+                    } else {
+                        $message = "Fail to delete order. Try again later.";
+                    }
+
+                    echo "<div class='alert $alertClass alert-dismissible fade show' role='alert'>
+                            <strong>$message</strong>
+                            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                          </div>";
+
+                    //clear the session status
+                    unset($_SESSION['status']);
+                    unset($_SESSION['operation']);
+                }
+                ?>
+
+
                 <!-- Main content can be added here -->
                 <!--methana idala oyalage part eka gahanna-->
                 <div class="wrapper">
@@ -87,8 +122,11 @@
                             <div class="col-md-12">
                                 <div class="mt-5 mb-3 clearfix">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <h2 class="mb-0">Dispatch Order</h2>
-                                        <a href="dispatchOrder.html" class="btn btn-success"><i class="fa fa-plus"></i> Place New Order</a>
+
+                                        <!-- show update or delete status alert -->
+
+                                        <!-- place new order button -->
+                                        <a href="dispatchOrder.php" class="btn btn-success"><i class="fa fa-plus"></i> Place New Order</a>
                                     </div>
 
                                     <div class="d-flex justify-content-between align-items-center mt-3">
@@ -98,87 +136,89 @@
                                                 name="search"
                                                 id="search"
                                                 class="form-control me-2"
-                                                placeholder="Search by Name"><br>
-                                            <br>
-                                            <!-- <button class="btn btn-outline-success" type="submit">Search</button> -->
+                                                placeholder="Search order"><br>
                                         </form>
                                     </div>
-
                                     <br>
-                                    <div id="search-result"></div>
-                                    <table class="table table-hover" id="table">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">SalesOrderID</th>
-                                                <th scope="col">Product Name</th>
-                                                <th scope="col">Store Name</th>
-                                                <th scope="col">Quantity</th>
-                                                <th scope="col">Order Date</th>
-                                                <th scope="col">Operation</th>
+                                    <div style="height: 720px; overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;">
+                                        <table class="table table-hover" id="table">
+                                            <thead style="position: sticky; top: 0; background-color: white; z-index: 100;">
+                                                <tr>
+                                                    <th scope="col">SalesOrderID</th>
+                                                    <th scope="col">Product Name</th>
+                                                    <th scope="col">Store Name</th>
+                                                    <th scope="col">Quantity</th>
+                                                    <th scope="col">Order Date</th>
+                                                    <th scope="col">Operation</th>
 
-                                            </tr>
-                                        </thead>
-                                        <tbody>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
 
-                                            <?php
-                                            // connect to the database
-                                            include "Connect.php";
-                                            // Initialize search variable
-                                            //$search = isset($_GET['search']) ? $mysqli_real_escape_string($_GET['search']) : '';
+                                                <?php
+                                                // connect to the database
+                                                include "Connect.php";
 
-                                            //  query to select details about dispatched order
-                                            $sql = "SELECT 
+                                                //  query to select details about dispatched order
+                                                $sql = "SELECT 
                                                         so.SalesOrderID, p.ProductName, s.StoreName, so.Quantity, so.OrderDate
                                                         FROM salesOrders so
                                                         JOIN products p ON so.ProductID = p.ProductID
                                                         JOIN stores s ON so.StoreID = s.StoreID
                                                         ORDER BY so.OrderDate DESC
-                                                        LIMIT 13";
+                                                        ";
 
-                                            //store results
-                                            $result = mysqli_query($conn, $sql);
+                                                //store results
+                                                $result = mysqli_query($conn, $sql);
+                                                if (mysqli_num_rows($result) > 0) {
 
-                                            /* if (!empty($search)) {
-                                    $sql .= " WHERE Name LIKE '%$search%'";
-                                } */
+                                                    while ($row = mysqli_fetch_assoc($result)) {
+                                                        $saleOrderID = $row['SalesOrderID'];
+                                                        $productName = $row['ProductName'];
+                                                        $storeName = $row['StoreName'];
+                                                        $quantity = $row['Quantity'];
+                                                        $orderDate = $row['OrderDate'];
 
-                                            if ($result) {
-
-                                                while ($row = mysqli_fetch_assoc($result)) {
-                                                    $saleOrderID = $row['SalesOrderID'];
-                                                    $productName = $row['ProductName'];
-                                                    $storeName = $row['StoreName'];
-                                                    $quantity = $row['Quantity'];
-                                                    $orderDate = $row['OrderDate'];
-
-                                                    echo '<tr>
+                                                        echo '<tr>
                                                         <td>' . $saleOrderID . '</td>
                                                         <td>' . $productName . '</td>
                                                         <td>' . $storeName . '</td>
                                                         <td>' . $quantity . '</td>                                                                                                             
                                                         <td>' . $orderDate . '</td>
                                                         <td>
-                                                            <button type="button" class="btn btn-primary">
-                                                                <a href="orderUpdate.php?updateID=' . $saleOrderID . '" class="text-light link-offset-2 link-underline link-underline-opacity-0">Update</a>
+                                                            <button type="button" class="btn btn-link">
+                                                                <a href="orderUpdate.php?updateID=' . $saleOrderID . '" class="text-dark link-offset-2 link-underline link-underline-opacity-0">
+                                                                <i class="material-icons">edit</i>
+                                                                </a>
                                                             </button>
-                                                            <button type="button" class="btn btn-danger">
-                                                                <a href="orderDelete.php?deleteID=' . $saleOrderID . '" class="text-light link-offset-2 link-underline link-underline-opacity-0">Delete</a>
+                                                            <button type="button" class="btn btn-link">
+                                                                <a href="orderDelete.php?deleteID=' . $saleOrderID . '" class="text-dark link-offset-2 link-underline link-underline-opacity-0">
+                                                                <i class="material-icons">delete</i>
+                                                                </a>
                                                             </button>
                                                         </td>
                                                         </tr>';
-                                                }
+                                                    }
 
-                                                // Free result set
-                                                mysqli_free_result($result);
-                                            }
-                                            // Close connection
-                                            mysqli_close($conn);
-                                            ?>
-                                        </tbody>
-                                    </table>
+                                                    // Free result set
+                                                    mysqli_free_result($result);
+                                                } else {
+                                                    if (mysqli_num_rows($result) == 0) {
+                                                        echo "No orders placed yet.";
+                                                    } else {
+                                                        echo "Database connection error.";
+                                                    }
+                                                }
+                                                // Close connection
+                                                mysqli_close($conn);
+                                                ?>
+                                            </tbody>
+                                        </table>
+
+                                        <!-- to show search results -->
+                                        <div id="search-result"></div>
+                                    </div>
                                 </div>
-                                <!-- to show search results -->
-                                <div id="search-result"></div>
 
 
                             </div>
@@ -191,6 +231,25 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="searchList.js"></script>
+
+    <!-- alert function created by @senuda -->
+    <script>
+        function fadeAlerts() {
+            var alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.classList.add('hide');
+                    setTimeout(() => alert.remove(), 500); // Remove after fade-out
+                }, 3000); // Adjust delay as needed
+            });
+        }
+
+        // call the function after page loads
+        window.onload = function() {
+            fadeAlerts();
+        }
+    </script>
+
 </body>
 
 </html>
