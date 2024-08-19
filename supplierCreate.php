@@ -70,7 +70,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             // Attempt to execute the prepared statement
             if($stmt->execute()){
                 // Records created successfully. Redirect to landing page
-                header("location: supplierIndex.php");
+                header("location: suppliers.php");
                 exit();
             } else{
                 echo "Oops! Something went wrong. Please try again later.";
@@ -142,7 +142,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             <a class="nav-link" href="#"><i class="material-icons">sell</i>Dispatch Orders</a>                            
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="supplierIndex.php"><i class="material-icons">local_shipping</i>Suppliers</a>
+                            <a class="nav-link" href="suppliers.php"><i class="material-icons">local_shipping</i>Suppliers</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="shopIndex.php"><i class="material-icons md-18">store</i>Shops</a>
@@ -189,7 +189,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                                     <span class="invalid-feedback"><?php echo $email_err;?></span>
                                 </div><br>
                                 <input type="submit" class="btn btn-primary" value="Submit">
-                                <a href="supplierIndex.php" class="btn btn-secondary ml-2">Cancel</a>
+                                <a href="suppliers.php" class="btn btn-secondary ml-2">Cancel</a>
                             </form>
                         </div>
                     </div>        
