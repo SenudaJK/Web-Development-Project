@@ -94,7 +94,7 @@ $role = $_SESSION['role'];
                                     </div>
 
                                     <div class="d-flex justify-content-between align-items-center mt-3">
-                                        <form method="GET" action="supplierIndex.php" class="d-flex align-items-center">
+                                        <form method="GET" action="suppliers.php" class="d-flex align-items-center">
                                             <input type="text" name="search" class="form-control me-2" placeholder="Search by Name" value="<?php echo isset($_GET['search']) ? $_GET['search'] : ''; ?>">
                                                 <button class="btn btn-outline-success" type="submit">Search</button>
                                         </form>
