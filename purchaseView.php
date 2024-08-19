@@ -107,12 +107,13 @@ $role = $_SESSION['role'];
                 </div>
             <!-- Main content can be added here -->
                 
-                <!-- Search bar with real-time filtering -->
+                
                 <div class ="display_table" >
                 
                 <a href="purchaseOrder.php" class="btn btn-success" ><i class="fa fa-plus"></i> Add New Purchase</a>
                 <button id="downloadCSV" class="btn btn-primary me-2 mr-5">Download CSV Report</button> <br><br>
                 <div class="input-group mb-5">
+                    <!-- Search bar with real-time filtering -->
                     <input type="text" id="search" class="form-control" placeholder="Search by Product Name or Supplier Name" oninput="filterResults()">
                     
 
