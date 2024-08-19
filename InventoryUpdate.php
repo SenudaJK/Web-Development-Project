@@ -1,15 +1,29 @@
+<?php
+session_start(); // Start session
+
+// Check if the user is logged in, if not redirect to login page
+if (!isset($_SESSION['username'])) {
+    header("Location: index.html");
+    exit();
+}
+
+$username = $_SESSION['username'];
+$role = $_SESSION['role'];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventory Management</title>
+    <title>Inventory</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="sketch.css">
+    <link rel="stylesheet" href="style.css">
     <style>
+
         .fade-away {
             opacity: 1;
             transition: opacity 0.5s ease-out;
@@ -47,19 +61,19 @@
                             <a class="nav-link" href="InventoryUpdate.php"><i class="material-icons">inventory</i>Inventory</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">category</i>Products</a>
+                            <a class="nav-link" href="productGet.php"><i class="material-icons">category</i>Products</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">shopping_cart</i>Purchase Orders</a>
+                            <a class="nav-link" href="purchaseView.php"><i class="material-icons">shopping_cart</i>Purchase Orders</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#"><i class="material-icons">sell</i>Dispatch Orders</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">local_shipping</i>Suppliers</a>
+                            <a class="nav-link" href="suppliers.php"><i class="material-icons">local_shipping</i>Suppliers</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons md-18">report</i>Store</a>
+                            <a class="nav-link" href="shopIndex.php"><i class="material-icons md-18">store</i>Shops</a>
                         </li>
                     </ul>
                     <!-- Logout link at the bottom of the sidebar -->
@@ -78,8 +92,8 @@
                     <div class="text-right">
                         <div id="username-container">
                             <a id="username" href="#"><i class="material-icons"
-                                    style="font-size:48px;">account_circle</i>Username</a>
-                            <span>Role</span>
+                                    style="font-size:48px;">account_circle</i><?php echo htmlspecialchars($username); ?></a>
+                            <!-- <span>Role</span> -->
                         </div>
                     </div>
                 </div>
@@ -89,7 +103,7 @@
                 $servername = "localhost:3307";
                 $username = "root";
                 $password = "";
-                $dbname = "camerainventory";
+                $dbname = "camera_warehouse";
 
                 $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -154,7 +168,6 @@
                 ?>
 
                 <div class="container mt-5">
-                    <h2 class="text-center">Inventory Management</h2>
 
                     <!-- Filters -->
                     <div class="d-flex mb-3">
@@ -223,112 +236,92 @@
                             }
                             ?>
                         </tbody>
+                        
                     </table>
                     </div>
-                </div>
-
-                <!-- Remove Quantity Modal -->
-                <div class="modal fade" id="removeModal" tabindex="-1" role="dialog" aria-labelledby="removeModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="removeModalLabel">Remove Quantity</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="removeForm" method="POST">
-                                    <input type="hidden" id="productID" name="productID">
-                                    <div class="form-group">
-                                        <label for="quantity">Quantity to remove</label>
-                                        <input type="number" class="form-control" id="quantity" name="quantity" min="1"
-                                            required>
-                                    </div>
-                                    <button type="submit" class="btn btn-danger mt-3" name="updateQuantity" >Remove</button>
-                                </form>
+                    <!-- Modal for removing quantity -->
+                    <div class="modal fade" id="removeModal" tabindex="-1" aria-labelledby="removeModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="removeModalLabel">Remove Quantity</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form method="post" id="removeForm">
+                                        <input type="hidden" name="productID" id="productID">
+                                        <div class="mb-3">
+                                            <label for="quantity" class="form-label">Quantity to Remove</label>
+                                            <input type="number" class="form-control" id="quantity" name="quantity" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-danger" name="updateQuantity">Remove</button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </main>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const alertElement = document.querySelector(".fade-away");
-
-            if (alertElement) {
-                setTimeout(() => {
-                    alertElement.classList.add("hide");
-                    setTimeout(() => alertElement.remove(), 500);
-                }, 2000);
+        document.addEventListener('DOMContentLoaded', (event) => {
+            // Function to show the remove modal with the correct Product ID
+            window.showRemoveModal = function (productID) {
+                document.getElementById('productID').value = productID;
+                var removeModal = new bootstrap.Modal(document.getElementById('removeModal'));
+                removeModal.show();
             }
-        });
 
-        function showRemoveModal(productID, productName) {
-            const productIDField = document.getElementById("productID");
-            productIDField.value = productID;
+            // Function to filter the table by brand and type
+            window.filterTable = function () {
+                var brand = document.getElementById('filterBrand').value.toLowerCase();
+                var type = document.getElementById('filterType').value.toLowerCase();
+                var rows = document.querySelectorAll('#inventoryTableBody tr');
 
-            const removeForm = document.getElementById("removeForm");
-            removeForm.onsubmit = function (event) {
-                if (!confirm("Are you sure you want to update the quantity for " + productName + "?")) {
-                    event.preventDefault(); // Prevent form submission if user cancels
-                }
-            };
+                rows.forEach(row => {
+                    var rowBrand = row.children[2].textContent.toLowerCase();
+                    var rowType = row.children[3].textContent.toLowerCase();
 
-            const removeModal = new bootstrap.Modal(document.getElementById("removeModal"));
-            removeModal.show();
-        }
-
-        function searchTable() {
-            const input = document.getElementById("searchInput");
-            const filter = input.value.toUpperCase();
-            const table = document.querySelector("table tbody");
-            const rows = table.getElementsByTagName("tr");
-
-            for (let i = 0; i < rows.length; i++) {
-                let row = rows[i];
-                let cells = row.getElementsByTagName("td");
-                let found = false;
-
-                for (let j = 0; j < cells.length; j++) {
-                    if (cells[j].innerText.toUpperCase().indexOf(filter) > -1) {
-                        found = true;
-                        break;
+                    if ((brand === '' || rowBrand.includes(brand)) &&
+                        (type === '' || rowType.includes(type))) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
                     }
-                }
-
-                if (found) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
+                });
             }
-        }
 
-        function filterTable() {
-            const filterBrand = document.getElementById("filterBrand").value.toUpperCase();
-            const filterType = document.getElementById("filterType").value.toUpperCase();
-            const table = document.querySelector("table tbody");
-            const rows = table.getElementsByTagName("tr");
+            // Function to search the table
+            window.searchTable = function () {
+                var input = document.getElementById('searchInput').value.toLowerCase();
+                var rows = document.querySelectorAll('#inventoryTableBody tr');
 
-            for (let i = 0; i < rows.length; i++) {
-                let row = rows[i];
-                let brandCell = row.getElementsByTagName("td")[2];
-                let typeCell = row.getElementsByTagName("td")[3];
-                let brandMatch = filterBrand === "" || brandCell.innerText.toUpperCase().indexOf(filterBrand) > -1;
-                let typeMatch = filterType === "" || typeCell.innerText.toUpperCase().indexOf(filterType) > -1;
+                rows.forEach(row => {
+                    var cells = row.getElementsByTagName('td');
+                    var found = Array.from(cells).some(cell => cell.textContent.toLowerCase().includes(input));
 
-                if (brandMatch && typeMatch) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
+                    row.style.display = found ? '' : 'none';
+                });
             }
-        }
+
+            // Function to handle alert fading away
+            function fadeAlerts() {
+                var alerts = document.querySelectorAll('.alert');
+                alerts.forEach(alert => {
+                    setTimeout(() => {
+                        alert.classList.add('hide');
+                        setTimeout(() => alert.remove(), 500); // Remove after fade-out
+                    }, 3000); // Adjust delay as needed
+                });
+            }
+
+            fadeAlerts();
+        });
     </script>
 </body>
 
