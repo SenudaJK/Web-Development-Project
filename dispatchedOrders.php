@@ -121,13 +121,21 @@ session_start();
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="mt-1 mb-3 clearfix">
-                                    <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex justify-content-start align-items-center gap-2">
                                         <!-- place new order button -->
                                         <a href="dispatchOrder.php" class="btn btn-success"><i class="fa fa-plus"></i> Place New Order</a>
+                                        <form action="orderExport.php" method="post">
+                                            <button type="submit"
+                                                name="export"
+                                                id="export-btn"
+                                                class="btn btn-success">
+                                                Export CSV
+                                            </button>
+                                        </form>
                                     </div>
 
                                     <div class="d-flex justify-content-between align-items-center mt-3">
-                                        <form method="GET" action="search.php" class="d-flex align-items-center">
+                                        <form method="GET" action="search.php" class="d-flex align-items-center w-46">
                                             <input
                                                 type="text"
                                                 name="search"
