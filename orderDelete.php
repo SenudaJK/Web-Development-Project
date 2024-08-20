@@ -15,7 +15,9 @@ if (isset($_GET['deleteID'])) {
 
     //checking errors. 
     if (!$resultDelete || mysqli_num_rows($resultDelete) == 0) {
-        echo "Something went wrong. Can not perform operation now.";
+        $_SESSION['status'] = 'error';
+        $_SESSION['operation'] = 'delete';
+        //echo "Something went wrong. Can not perform operation now.";
         exit;
     }
 
@@ -31,7 +33,9 @@ if (isset($_GET['deleteID'])) {
 
     //checking errors
     if (!$resultInsertQuantity) {
-        echo "Something went wrong with the inventory. Can not perform operation now.";
+        $_SESSION['status'] = 'error';
+        $_SESSION['operation'] = 'delete';
+        //echo "Something went wrong with the inventory. Can not perform operation now.";
         exit;
         //used for debugging purposes
         //die("Error executing query: " . mysqli_error($conn));

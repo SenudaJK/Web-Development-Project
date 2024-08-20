@@ -1,6 +1,7 @@
 <?php
 //connect to the database
 include 'Connect.php';
+session_start();
 
 $updateID = $_GET['updateID'];
 
@@ -14,7 +15,10 @@ $sqlFill = "SELECT
 $resultFill = mysqli_query($conn, $sqlFill);
 
 if (!$resultFill) {
-    echo "Something went wrong. Please try again later";
+    $_SESSION['status'] = 'error';
+    $_SESSION['operation'] = 'update';
+    header('location: dispatchedOrders.php');
+    //echo "Something went wrong. Please try again later";
     //used for debugging purposes
     //die("Error executing query: " . mysqli_error($conn));
 }
@@ -40,9 +44,10 @@ if (isset($_POST['confirm'])) {
 
     // Check the query is successful executed
     if (!$result || mysqli_num_rows($result) == 0) {
-
-        echo "Your request is can not be done now. Please try again later.";
-        return;
+        $_SESSION['status'] = 'error';
+        $_SESSION['operation'] = 'update';
+        header('location: dispatchedOrders.php');
+        //echo "Your request is can not be done now. Please try again later.";
         //used for debugging purposes
         //die("Error executing query: " . mysqli_error($conn));
     }
@@ -59,8 +64,11 @@ if (isset($_POST['confirm'])) {
         $resultStore = mysqli_query($conn, $sqlStore);
 
         if (!$resultStore || mysqli_num_rows($resultStore) == 0) {
-            echo "Your request is can not be done now. Please try again later";
-            return;
+            $_SESSION['status'] = 'error';
+            $_SESSION['operation'] = 'update';
+            header('location: dispatchedOrders.php');
+            //echo "Your request is can not be done now. Please try again later";
+
             //used for debugging purposes
             //die("Error executing query: " . mysqli_error($conn));
         }
@@ -76,8 +84,11 @@ if (isset($_POST['confirm'])) {
             $resultQuantity = mysqli_query($conn, $sqlQuantity);
 
             if (!$resultQuantity || mysqli_num_rows($resultQuantity) == 0) {
-                echo "Inventory not found.";
-                return;
+                $_SESSION['status'] = 'error';
+                $_SESSION['operation'] = 'update';
+                header('location: dispatchedOrders.php');
+                //echo "Inventory not found.";
+
                 //used for debugging purposes
                 //die("Error executing query: " . mysqli_error($conn));
             }
@@ -87,8 +98,10 @@ if (isset($_POST['confirm'])) {
 
             // check available quantity is enough to update an order
             if ($quantity > $availableQuantity) {
-                echo "Available quantity is not enough.";
-                return;
+                $_SESSION['status'] = 'error';
+                $_SESSION['operation'] = 'update';
+                header('location: dispatchedOrders.php');
+                //echo "Available quantity is not enough.";
             }
 
             // Insert dispatch order data into the salesOrder table
@@ -103,18 +116,34 @@ if (isset($_POST['confirm'])) {
             if (mysqli_query($conn, $sqlInsertQuery)) {
                 // reduce Inventory from Inventory table
                 $updatedQuantity = $availableQuantity - $quantity;
+
+                //ensure remaining quantity is not a negative value
+                if ($updatedQuantity < 0) {
+                    $_SESSION['status'] = 'error';
+                    $_SESSION['operation'] = 'update';
+                    header('location: dispatchedOrders.php');
+                    exit;
+                }
+
                 $sqlUpdateQuantity = "UPDATE Inventory
                                       SET TotalQuantity = '$updatedQuantity'
                                       WHERE ProductID = '$productID'";
                 $resultUpdateQuantity = mysqli_query($conn, $sqlUpdateQuantity);
                 if ($resultUpdateQuantity) {
+                    $_SESSION['status'] = 'success';
+                    $_SESSION['operation'] = 'update';
                     //echo "Order placed successfully!";
                     header('location: dispatchedOrders.php');
                 } else {
-                    echo "Can not update inventory now. Try again later.";
+                    $_SESSION['status'] = 'error';
+                    $_SESSION['operation'] = 'update';
+                    //echo "Can not update inventory now. Try again later.";
                 }
             } else {
-                echo "Something went wrong. Can not update your inventory now.";
+                $_SESSION['status'] = 'error';
+                $_SESSION['operation'] = 'update';
+                header('location: dispatchedOrders.php');
+                //echo "Something went wrong. Can not update your inventory now.";
                 //used for debugging purposes
                 //echo "Error inserting order: " . mysqli_error($conn);
             }
@@ -124,6 +153,7 @@ if (isset($_POST['confirm'])) {
     }
 }
 mysqli_close($conn);
+
 ?>
 
 <!DOCTYPE html>

@@ -97,9 +97,9 @@ session_start();
                     }
 
                     if ($status == 'success') {
-                        $message = "Order deleted successfully";
+                        $message = "Order " . $operation . "d successfully";
                     } else {
-                        $message = "Fail to delete order. Try again later.";
+                        $message = "Fail to " . $operation . " order. Try again later.";
                     }
 
                     echo "<div class='alert $alertClass alert-dismissible fade show' role='alert'>
@@ -120,11 +120,8 @@ session_start();
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="mt-5 mb-3 clearfix">
+                                <div class="mt-1 mb-3 clearfix">
                                     <div class="d-flex justify-content-between align-items-center">
-
-                                        <!-- show update or delete status alert -->
-
                                         <!-- place new order button -->
                                         <a href="dispatchOrder.php" class="btn btn-success"><i class="fa fa-plus"></i> Place New Order</a>
                                     </div>
@@ -140,13 +137,14 @@ session_start();
                                         </form>
                                     </div>
                                     <br>
-                                    <div style="height: 720px; overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;">
+                                    <div style="height: 780px; overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;">
                                         <table class="table table-hover" id="table">
                                             <thead style="position: sticky; top: 0; background-color: white; z-index: 100;">
                                                 <tr>
                                                     <th scope="col">SalesOrderID</th>
                                                     <th scope="col">Product Name</th>
                                                     <th scope="col">Store Name</th>
+                                                    <th scope="col">Location</th>
                                                     <th scope="col">Quantity</th>
                                                     <th scope="col">Order Date</th>
                                                     <th scope="col">Operation</th>
@@ -161,7 +159,7 @@ session_start();
 
                                                 //  query to select details about dispatched order
                                                 $sql = "SELECT 
-                                                        so.SalesOrderID, p.ProductName, s.StoreName, so.Quantity, so.OrderDate
+                                                        so.SalesOrderID, p.ProductName, s.StoreName, s.Location, so.Quantity, so.OrderDate
                                                         FROM salesOrders so
                                                         JOIN products p ON so.ProductID = p.ProductID
                                                         JOIN stores s ON so.StoreID = s.StoreID
@@ -176,6 +174,7 @@ session_start();
                                                         $saleOrderID = $row['SalesOrderID'];
                                                         $productName = $row['ProductName'];
                                                         $storeName = $row['StoreName'];
+                                                        $location = $row['Location'];
                                                         $quantity = $row['Quantity'];
                                                         $orderDate = $row['OrderDate'];
 
@@ -183,6 +182,7 @@ session_start();
                                                         <td>' . $saleOrderID . '</td>
                                                         <td>' . $productName . '</td>
                                                         <td>' . $storeName . '</td>
+                                                        <td>' . $location . '</td>
                                                         <td>' . $quantity . '</td>                                                                                                             
                                                         <td>' . $orderDate . '</td>
                                                         <td>

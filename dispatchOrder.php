@@ -2,6 +2,7 @@
 
 //connect to the database
 include 'Connect.php';
+session_start();
 
 //get data from html
 if (isset($_POST['confirm'])) {
@@ -19,9 +20,12 @@ if (isset($_POST['confirm'])) {
 
     // Check the query is successful executed
     if (!$result || mysqli_num_rows($result) == 0) {
-
-        echo "Your request is can not be done now. Please try again later.";
-        return;
+        $_SESSION['status'] = 'error';
+        $_SESSION['operation'] = 'place';
+        header('location: dispatchedOrders.php');
+        exit;
+        //echo "Your request is can not be done now. Please try again later.";
+        //return;
         //used for debugging purposes
         //die("Error executing query: " . mysqli_error($conn));
     }
@@ -37,8 +41,12 @@ if (isset($_POST['confirm'])) {
         $resultStore = mysqli_query($conn, $sqlStore);
 
         if (!$resultStore || mysqli_num_rows($resultStore) == 0) {
-            echo "Your request is can not be done now. Please try again later";
-            return;
+            $_SESSION['status'] = 'error';
+            $_SESSION['operation'] = 'place';
+            header('location: dispatchedOrders.php');
+            exit;
+            //echo "Your request is can not be done now. Please try again later";
+            //return;
             //used for debugging purposes
             //die("Error executing query: " . mysqli_error($conn));
         }
@@ -54,8 +62,12 @@ if (isset($_POST['confirm'])) {
             $resultQuantity = mysqli_query($conn, $sqlQuantity);
 
             if (!$resultQuantity || mysqli_num_rows($resultQuantity) == 0) {
-                echo "Inventory not found.";
-                return;
+                $_SESSION['status'] = 'error';
+                $_SESSION['operation'] = 'place';
+                header('location: dispatchedOrders.php');
+                exit;
+                //echo "Inventory not found.";
+                //return;
                 //used for debugging purposes
                 //die("Error executing query: " . mysqli_error($conn));
             }
@@ -65,36 +77,57 @@ if (isset($_POST['confirm'])) {
 
             // check available quantity is enough to update an order
             if ($quantity > $availableQuantity) {
-                echo "Available quantity is not enough.";
-                return;
+                $_SESSION['status'] = 'error';
+                $_SESSION['operation'] = 'place';
+                header('location: dispatchedOrders.php');
+                exit;
+                //echo "Available quantity is not enough.";
+                //return;
             }
 
             // Insert dispatch order data into the salesOrder table
-            $sqlInsertQuery = "INSERT INTO salesorders (ProductID, StoreID, quantity, orderDate)
-                               VALUES ('$productID', '$storeID', '$quantity', NOW())";
 
-            //display whether order is successfully dispatched or not
-            if (mysqli_query($conn, $sqlInsertQuery)) {
-                // reduce Inventory from Inventory table
-                $updatedQuantity = $availableQuantity - $quantity;
+
+            $updatedQuantity = $availableQuantity - $quantity;
+            if ($updatedQuantity < 0) {
+                $_SESSION['status'] = 'error';
+                $_SESSION['operation'] = 'place';
+                header('location: dispatchedOrders.php');
+                exit;
+            } else {
                 $sqlUpdateQuantity = "UPDATE Inventory
-                                      SET TotalQuantity = '$updatedQuantity'
-                                      WHERE ProductID = '$productID'";
+                                  SET TotalQuantity = '$updatedQuantity'
+                                  WHERE ProductID = '$productID'";
                 $resultUpdateQuantity = mysqli_query($conn, $sqlUpdateQuantity);
                 if ($resultUpdateQuantity) {
-                    echo "Order placed successfully!";
-                    header('location: dispatchedOrders.php');
+                    $sqlInsertQuery = "INSERT INTO salesorders (ProductID, StoreID, quantity, orderDate)
+                                       VALUES ('$productID', '$storeID', '$quantity', NOW())";
+                    $resultInsertQuery = mysqli_query($conn, $sqlInsertQuery);
+
+                    if (!$resultInsertQuery) {
+                        $_SESSION['status'] = 'error';
+                        $_SESSION['operation'] = 'place';
+                    } else {
+                        $_SESSION['status'] = 'success';
+                        $_SESSION['operation'] = 'place';
+                        //echo "Order placed successfully!";
+                        header('location: dispatchedOrders.php');
+                    }
                 } else {
-                    echo "Can not update inventory now. Try again later.";
+                    $_SESSION['status'] = 'error';
+                    $_SESSION['operation'] = 'place';
+                    //echo "can not perform the action";
+                    header('location: dispatchedOrders.php');
+                    exit;
                 }
-            } else {
-                echo "Something went wrong. Can not update your inventory now.";
-                //used for debugging purposes
-                //echo "Error inserting order: " . mysqli_error($conn);
             }
         }
     } else {
-        echo "Product not found!";
+        $_SESSION['status'] = 'error';
+        $_SESSION['operation'] = 'place';
+        header('location: dispatchedOrders.php');
+        exit;
+        //echo "Product not found!";
     }
 }
 mysqli_close($conn);
