@@ -1,4 +1,6 @@
 <?php
+//use for debugging purposes
+//die("Error executing query: " . mysqli_error($conn));
 
 //connect to the database
 include 'Connect.php';
@@ -15,61 +17,58 @@ if (isset($_POST['confirm'])) {
     // Fetch productID using productName
     $sql = "SELECT ProductID 
             FROM products 
-            WHERE ProductName = '$productName'";
-    $result = mysqli_query($conn, $sql);
+            WHERE ProductName = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $productName);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     // Check the query is successful executed
-    if (!$result || mysqli_num_rows($result) == 0) {
+    if (!$result || $result->num_rows == 0) {
         $_SESSION['status'] = 'error';
         $_SESSION['operation'] = 'place';
         header('location: dispatchedOrders.php');
         exit;
+        //no product found
         //echo "Your request is can not be done now. Please try again later.";
-        //return;
-        //used for debugging purposes
-        //die("Error executing query: " . mysqli_error($conn));
-    }
-
-    if (mysqli_num_rows($result) > 0) {
+    } else {
         //fetch an item from result
-        $row = mysqli_fetch_assoc($result);
+        $row = $result->fetch_assoc();
         $productID = $row['ProductID'];
 
         $sqlStore = "SELECT StoreID 
                     FROM stores 
-                    WHERE StoreName = '$storeName'";
-        $resultStore = mysqli_query($conn, $sqlStore);
+                    WHERE StoreName = ?";
+        $stmtStore = $conn->prepare($sqlStore);
+        $stmtStore->bind_param("s", $storeName);
+        $stmtStore->execute();
+        $resultStore = $stmtStore->get_result();
 
-        if (!$resultStore || mysqli_num_rows($resultStore) == 0) {
+        if (!$resultStore || $resultStore->num_rows == 0) {
             $_SESSION['status'] = 'error';
             $_SESSION['operation'] = 'place';
             header('location: dispatchedOrders.php');
             exit;
             //echo "Your request is can not be done now. Please try again later";
-            //return;
-            //used for debugging purposes
-            //die("Error executing query: " . mysqli_error($conn));
-        }
-
-        if (mysqli_num_rows($resultStore)) {
-            $rowStore = mysqli_fetch_assoc(($resultStore));
+        } else {
+            $rowStore = $resultStore->fetch_assoc();
             $storeID = $rowStore['StoreID'];
 
             // get TotalQuantity related to ProductID
             $sqlQuantity = "SELECT TotalQuantity 
                              FROM Inventory 
-                             WHERE ProductID = '$productID'";
-            $resultQuantity = mysqli_query($conn, $sqlQuantity);
+                             WHERE ProductID = ?";
+            $stmtQuantity = $conn->prepare($sqlQuantity);
+            $stmtQuantity->bind_param("i", $productID);
+            $stmtQuantity->execute();
+            $resultQuantity = $stmtQuantity->get_result();
 
-            if (!$resultQuantity || mysqli_num_rows($resultQuantity) == 0) {
+            if (!$resultQuantity || $resultQuantity->num_rows == 0) {
                 $_SESSION['status'] = 'error';
                 $_SESSION['operation'] = 'place';
                 header('location: dispatchedOrders.php');
                 exit;
                 //echo "Inventory not found.";
-                //return;
-                //used for debugging purposes
-                //die("Error executing query: " . mysqli_error($conn));
             }
 
             $rowQuantity = mysqli_fetch_assoc($resultQuantity);
@@ -82,12 +81,9 @@ if (isset($_POST['confirm'])) {
                 header('location: dispatchedOrders.php');
                 exit;
                 //echo "Available quantity is not enough.";
-                //return;
             }
 
             // Insert dispatch order data into the salesOrder table
-
-
             $updatedQuantity = $availableQuantity - $quantity;
             if ($updatedQuantity < 0) {
                 $_SESSION['status'] = 'error';
@@ -96,22 +92,29 @@ if (isset($_POST['confirm'])) {
                 exit;
             } else {
                 $sqlUpdateQuantity = "UPDATE Inventory
-                                  SET TotalQuantity = '$updatedQuantity'
-                                  WHERE ProductID = '$productID'";
-                $resultUpdateQuantity = mysqli_query($conn, $sqlUpdateQuantity);
-                if ($resultUpdateQuantity) {
-                    $sqlInsertQuery = "INSERT INTO salesorders (ProductID, StoreID, quantity, orderDate)
-                                       VALUES ('$productID', '$storeID', '$quantity', NOW())";
-                    $resultInsertQuery = mysqli_query($conn, $sqlInsertQuery);
+                                      SET TotalQuantity = ?
+                                      WHERE ProductID = ?";
+                $stmtUpdateQuantity = $conn->prepare($sqlUpdateQuantity);
+                $stmtUpdateQuantity->bind_param("ii", $updatedQuantity, $productID);
 
-                    if (!$resultInsertQuery) {
-                        $_SESSION['status'] = 'error';
-                        $_SESSION['operation'] = 'place';
-                    } else {
+                if ($stmtUpdateQuantity->execute()) {
+                    $sqlInsertQuery = "INSERT INTO salesorders (ProductID, StoreID, quantity, orderDate)
+                                       VALUES (?, ?, ?, NOW())";
+                    $stmtInsert = $conn->prepare($sqlInsertQuery);
+                    $stmtInsert->bind_param("iii", $productID, $storeID, $quantity);
+
+
+                    if ($stmtInsert->execute()) {
                         $_SESSION['status'] = 'success';
                         $_SESSION['operation'] = 'place';
-                        //echo "Order placed successfully!";
                         header('location: dispatchedOrders.php');
+                        exit;
+                    } else {
+                        $_SESSION['status'] = 'error';
+                        $_SESSION['operation'] = 'place';
+                        header('location: dispatchedOrders.php');
+                        exit;
+                        //echo "Order placed successfully!";
                     }
                 } else {
                     $_SESSION['status'] = 'error';
@@ -122,12 +125,6 @@ if (isset($_POST['confirm'])) {
                 }
             }
         }
-    } else {
-        $_SESSION['status'] = 'error';
-        $_SESSION['operation'] = 'place';
-        header('location: dispatchedOrders.php');
-        exit;
-        //echo "Product not found!";
     }
 }
 mysqli_close($conn);

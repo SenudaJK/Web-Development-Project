@@ -1,24 +1,28 @@
-
-
 <?php
 include 'Connect.php';
 
 if (isset($_GET['input'])) {
-    $input = $_GET['input'];
+    $input = '%' . $_GET['input'] . '%';
     $sql = "SELECT 
             so.SalesOrderID, p.ProductName, s.StoreName, so.Quantity, so.OrderDate
             FROM salesOrders so
             JOIN products p ON so.ProductID = p.ProductID
             JOIN stores s ON so.StoreID = s.StoreID
-            WHERE so.SalesOrderID LIKE '%$input%' OR 
-            p.ProductName LIKE '%$input%' OR 
-            s.StoreName LIKE '%$input%' OR 
-            so.Quantity LIKE '%$input%' OR 
-            so.OrderDate LIKE '%$input%'
+            WHERE so.SalesOrderID LIKE ? OR 
+            p.ProductName LIKE ? OR 
+            s.StoreName LIKE ? OR 
+            so.Quantity LIKE ? OR 
+            so.OrderDate LIKE ?
             ORDER BY so.OrderDate DESC";
-    $result = mysqli_query($conn, $sql);
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sssss", $input, $input, $input, $input, $input);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
     if (!$result || mysqli_num_rows($result) == 0) {
-        echo "No order Found.";
+        echo '<div class="alert alert-danger" role="alert">
+                No product found
+              </div>';
         return;
     } else {
         echo "<br>";
@@ -34,7 +38,7 @@ if (isset($_GET['input'])) {
         </tr></thead>';
         echo '<tbody>';
 
-        while ($row = mysqli_fetch_assoc($result)) {
+        while ($row = $result->fetch_assoc()) {
             $saleOrderID = $row['SalesOrderID'];
             $productName = $row['ProductName'];
             $storeName = $row['StoreName'];
@@ -63,8 +67,9 @@ if (isset($_GET['input'])) {
         }
         echo '</tbody></table>';
         // Free result set
-        mysqli_free_result($result);
+        $result->free();
     }
     // Close connection
+    $stmt->close();
     mysqli_close($conn);
 }

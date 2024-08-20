@@ -1,4 +1,7 @@
 <?php
+//use this for debugging purposes
+//die("Error executing query: " . mysqli_error($conn));
+
 //connect to the database
 include 'Connect.php';
 session_start();
@@ -11,19 +14,21 @@ $sqlFill = "SELECT
             FROM salesOrders so
             JOIN products p ON so.ProductID = p.ProductID
             JOIN stores s ON so.StoreID = s.StoreID
-            WHERE SalesOrderID = '$updateID'";
-$resultFill = mysqli_query($conn, $sqlFill);
+            WHERE SalesOrderID = ?";
+$stmtFill = $conn->prepare($sqlFill);
+$stmtFill->bind_param("i", $updateID);
+$stmtFill->execute();
+$resultFill = $stmtFill->get_result();
 
 if (!$resultFill) {
     $_SESSION['status'] = 'error';
     $_SESSION['operation'] = 'update';
     header('location: dispatchedOrders.php');
+    exit;
     //echo "Something went wrong. Please try again later";
-    //used for debugging purposes
-    //die("Error executing query: " . mysqli_error($conn));
 }
 
-$rowFill = mysqli_fetch_assoc($resultFill);
+$rowFill = $resultFill->fetch_assoc();
 $fillProductName = $rowFill['ProductName'];
 $fillStoreName = $rowFill['StoreName'];
 $fillQuantity = $rowFill['Quantity'];
@@ -39,61 +44,63 @@ if (isset($_POST['confirm'])) {
     // Fetch productID using productName
     $sql = "SELECT ProductID 
             FROM products 
-            WHERE ProductName = '$productName'";
-    $result = mysqli_query($conn, $sql);
+            WHERE ProductName = ?";
+    $stmtProduct = $conn->prepare($sql);
+    $stmtProduct->bind_param("s", $productName);
+    $stmtProduct->execute();
+    $result = $stmtProduct->get_result();
 
     // Check the query is successful executed
-    if (!$result || mysqli_num_rows($result) == 0) {
+    if (!$result || $result->num_rows == 0) {
         $_SESSION['status'] = 'error';
         $_SESSION['operation'] = 'update';
         header('location: dispatchedOrders.php');
+        exit;
         //echo "Your request is can not be done now. Please try again later.";
-        //used for debugging purposes
-        //die("Error executing query: " . mysqli_error($conn));
     }
 
     if (mysqli_num_rows($result)) {
         //fetch an item from result
-        $row = mysqli_fetch_assoc($result);
+        $row = $result->fetch_assoc();
         $productID = $row['ProductID'];
 
         //get StoreID using StoreName
         $sqlStore = "SELECT StoreID 
-                    FROM stores 
-                    WHERE StoreName = '$storeName'";
-        $resultStore = mysqli_query($conn, $sqlStore);
+                     FROM stores 
+                     WHERE StoreName = ?";
+        $stmtStore = $conn->prepare($sqlStore);
+        $stmtStore->bind_param("s", $storeName);
+        $stmtStore->execute();
+        $resultStore = $stmtStore->get_result();
 
-        if (!$resultStore || mysqli_num_rows($resultStore) == 0) {
+        if (!$resultStore || $resultStore->num_rows == 0) {
             $_SESSION['status'] = 'error';
             $_SESSION['operation'] = 'update';
             header('location: dispatchedOrders.php');
+            exit;
             //echo "Your request is can not be done now. Please try again later";
-
-            //used for debugging purposes
-            //die("Error executing query: " . mysqli_error($conn));
-        }
-
-        if (mysqli_num_rows($resultStore)) {
-            $rowStore = mysqli_fetch_assoc(($resultStore));
+        } else {
+            $rowStore = $resultStore->fetch_assoc();
             $storeID = $rowStore['StoreID'];
 
             // get TotalQuantity related to ProductID
             $sqlQuantity = "SELECT TotalQuantity 
-                             FROM Inventory 
-                             WHERE ProductID = '$productID'";
-            $resultQuantity = mysqli_query($conn, $sqlQuantity);
+                            FROM Inventory 
+                            WHERE ProductID = ?";
+            $stmtQuantity = $conn->prepare($sqlQuantity);
+            $stmtQuantity->bind_param("i", $productID);
+            $stmtQuantity->execute();
+            $resultQuantity = $stmtQuantity->get_result();
 
-            if (!$resultQuantity || mysqli_num_rows($resultQuantity) == 0) {
+            if (!$resultQuantity || $resultQuantity->num_rows == 0) {
                 $_SESSION['status'] = 'error';
                 $_SESSION['operation'] = 'update';
                 header('location: dispatchedOrders.php');
+                exit;
                 //echo "Inventory not found.";
-
-                //used for debugging purposes
-                //die("Error executing query: " . mysqli_error($conn));
             }
 
-            $rowQuantity = mysqli_fetch_assoc($resultQuantity);
+            $rowQuantity = $resultQuantity->fetch_assoc();
             $availableQuantity = $rowQuantity['TotalQuantity'];
 
             // check available quantity is enough to update an order
@@ -101,21 +108,24 @@ if (isset($_POST['confirm'])) {
                 $_SESSION['status'] = 'error';
                 $_SESSION['operation'] = 'update';
                 header('location: dispatchedOrders.php');
+                exit;
                 //echo "Available quantity is not enough.";
             }
 
-            // Insert dispatch order data into the salesOrder table
+            // Insert updated dispatch order data into the salesOrder table
             $sqlInsertQuery = "UPDATE salesorders
-                                SET ProductID = '$productID',
-                                StoreID = '$storeID',
-                                Quantity = '$quantity',
-                                OrderDate = NOW()
-                                WHERE SalesOrderID = '$updateID'";
+                               SET ProductID = ?,
+                               StoreID = ?,
+                               Quantity = ?,
+                               OrderDate = NOW()
+                               WHERE SalesOrderID = ?";
+            $stmtUpdate = $conn->prepare($sqlInsertQuery);
+            $stmtUpdate->bind_param("iiii", $productID, $storeID, $quantity, $updateID);
 
             //display whether order is successfully dispatched or not
-            if (mysqli_query($conn, $sqlInsertQuery)) {
+            if ($stmtUpdate->execute()) {
                 // reduce Inventory from Inventory table
-                $updatedQuantity = $availableQuantity - $quantity;
+                $updatedQuantity = $availableQuantity - ($quantity - $fillQuantity);
 
                 //ensure remaining quantity is not a negative value
                 if ($updatedQuantity < 0) {
@@ -126,10 +136,13 @@ if (isset($_POST['confirm'])) {
                 }
 
                 $sqlUpdateQuantity = "UPDATE Inventory
-                                      SET TotalQuantity = '$updatedQuantity'
-                                      WHERE ProductID = '$productID'";
-                $resultUpdateQuantity = mysqli_query($conn, $sqlUpdateQuantity);
-                if ($resultUpdateQuantity) {
+                                      SET TotalQuantity = ?
+                                      WHERE ProductID = ?";
+                $stmtUpdateQuantity = $conn->prepare($sqlUpdateQuantity);
+                $stmtUpdateQuantity->bind_param("ii", $updatedQuantity, $productID);
+                $stmtUpdateQuantity->execute();
+
+                if ($stmtUpdateQuantity->affected_rows > 0) {
                     $_SESSION['status'] = 'success';
                     $_SESSION['operation'] = 'update';
                     //echo "Order placed successfully!";
@@ -137,6 +150,7 @@ if (isset($_POST['confirm'])) {
                 } else {
                     $_SESSION['status'] = 'error';
                     $_SESSION['operation'] = 'update';
+                    header('location: dispatchedOrders.php');
                     //echo "Can not update inventory now. Try again later.";
                 }
             } else {
@@ -144,15 +158,11 @@ if (isset($_POST['confirm'])) {
                 $_SESSION['operation'] = 'update';
                 header('location: dispatchedOrders.php');
                 //echo "Something went wrong. Can not update your inventory now.";
-                //used for debugging purposes
-                //echo "Error inserting order: " . mysqli_error($conn);
             }
         }
-    } else {
-        echo "Product not found!";
     }
 }
-mysqli_close($conn);
+$conn->close();
 
 ?>
 
