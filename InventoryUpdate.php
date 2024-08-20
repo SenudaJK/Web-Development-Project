@@ -166,6 +166,8 @@ if (empty($_SESSION['csrf_token'])) {
                     $stmt->close();
                 }
 
+
+
                 // Fetch data from Inventory
                 $sql = "SELECT * FROM Inventory";
                 $result = $conn->query($sql);
@@ -217,7 +219,7 @@ if (empty($_SESSION['csrf_token'])) {
 
 
 
-                    <div style="height: 300px; overflow-y: auto; text-center">
+                    <div style="height: 300px; overflow-y: auto;">
                         <!-- Inventory Table -->
                         <table class="table table-striped table-bordered">
                             <thead>
@@ -247,7 +249,15 @@ if (empty($_SESSION['csrf_token'])) {
                                         echo "<td>" . htmlspecialchars($row["TotalQuantity"]) . "</td>";
                                         echo "<td>" . htmlspecialchars($row["LastReceivedDate"]) . "</td>";
                                         echo "<td>" . htmlspecialchars($row["TotalValue"]) . "</td>";
-                                        echo "<td><span class='material-symbols-outlined' style='cursor: pointer;' onclick='showRemoveModal(" . $row["ProductID"] . ", \"" . htmlspecialchars($row["ProductName"]) . "\")'>do_not_disturb_on</span></td>";
+
+                                        if ($role !== 'Worker') {
+                                            echo "<td><span class='material-symbols-outlined' style='cursor: pointer;' onclick='showRemoveModal(" . $row["ProductID"] . ", \"" . htmlspecialchars($row["ProductName"]) . "\")'>do_not_disturb_on</span></td>";
+                                        } else if ($role === 'Worker') {
+                                            echo "<td><span class='material-symbols-outlined' style='cursor: not-allowed; color: gray;' onclick='alert(\"You do not have permission to remove this item.\")'>do_not_disturb_on</span></td>";
+                                        } else {
+                                            echo "<td>No Actions Available</td>";
+                                        }
+
                                         echo "</tr>";
 
                                     }
@@ -271,7 +281,8 @@ if (empty($_SESSION['csrf_token'])) {
                             </div>
                             <div class="modal-body">
                                 <form method="post" id="removeForm">
-                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                                    <input type="hidden" name="csrf_token"
+                                        value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                                     <input type="hidden" name="productID" id="productID">
                                     <div class="mb-3">
                                         <label for="quantity" class="form-label">Quantity to Remove</label>
