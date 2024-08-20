@@ -9,6 +9,12 @@ if (!isset($_SESSION['username'])) {
 
 $username = $_SESSION['username'];
 $role = $_SESSION['role'];
+
+// session_start();
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -21,6 +27,8 @@ $role = $_SESSION['role'];
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="style.css">
     <style>
         .fade-away {
@@ -116,6 +124,10 @@ $role = $_SESSION['role'];
 
                 // Handle quantity update
                 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['updateQuantity'])) {
+
+                    if ($_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+                        die("CSRF token validation failed");
+                    }
                     $productID = $_POST['productID'];
                     $quantityToRemove = $_POST['quantity'];
 
@@ -237,8 +249,9 @@ $role = $_SESSION['role'];
                                         echo "<td>" . htmlspecialchars($row["TotalQuantity"]) . "</td>";
                                         echo "<td>" . htmlspecialchars($row["LastReceivedDate"]) . "</td>";
                                         echo "<td>" . htmlspecialchars($row["TotalValue"]) . "</td>";
-                                        echo "<td><button class='btn btn-danger' onclick='showRemoveModal(" . $row["ProductID"] . ", \"" . htmlspecialchars($row["ProductName"]) . "\")'>Remove</button></td>";
+                                        echo "<td><span class='material-symbols-outlined' style='cursor: pointer;' onclick='showRemoveModal(" . $row["ProductID"] . ", \"" . htmlspecialchars($row["ProductName"]) . "\")'>do_not_disturb_on</span></td>";
                                         echo "</tr>";
+
                                     }
                                 } else {
                                     echo "<tr><td colspan='9'>No records found.</td></tr>";
@@ -260,6 +273,7 @@ $role = $_SESSION['role'];
                             </div>
                             <div class="modal-body">
                                 <form method="post" id="removeForm">
+                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                                     <input type="hidden" name="productID" id="productID">
                                     <div class="mb-3">
                                         <label for="quantity" class="form-label">Quantity to Remove</label>
@@ -288,6 +302,24 @@ $role = $_SESSION['role'];
                 removeModal.show();
             }
 
+            // Function to handle form submission with confirmation
+            window.handleFormSubmit = function (event) {
+                var form = event.target;
+                var quantity = document.getElementById('quantity').value;
+                var productName = document.getElementById('quantity').dataset.productName; // Get productName
+
+                var confirmRemove = confirm(`Are you sure you want to remove ${quantity}?`);
+
+                if (confirmRemove) {
+                    form.submit(); // Proceed with form submission
+                } else {
+                    event.preventDefault(); // Prevent form submission
+                }
+            }
+
+            // Bind handleFormSubmit function to form submission event
+            var removeForm = document.getElementById('removeForm');
+            removeForm.addEventListener('submit', handleFormSubmit);
             // Function to filter the table by brand and type
             window.filterTable = function () {
                 var brand = document.getElementById('filterBrand').value.toLowerCase();
@@ -333,6 +365,7 @@ $role = $_SESSION['role'];
 
             fadeAlerts();
         });
+
 
         document.getElementById('downloadCSV').addEventListener('click', function () {
             window.location.href = 'inventoryCSV.php';
