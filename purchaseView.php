@@ -86,7 +86,7 @@ $role = $_SESSION['role'];
                     </ul>
                     <!-- Logout link at the bottom of the sidebar -->
                     <div class="logout">
-                        <a href="#"><i class="material-icons">logout</i>Log out</a>
+                        <a href="logout.php"><i class="material-icons">logout</i>Log out</a>
                     </div>
                 </div>
             </nav>
