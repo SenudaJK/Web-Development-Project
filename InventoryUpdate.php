@@ -166,8 +166,6 @@ if (empty($_SESSION['csrf_token'])) {
                     $stmt->close();
                 }
 
-
-
                 // Fetch data from Inventory
                 $sql = "SELECT * FROM Inventory";
                 $result = $conn->query($sql);
@@ -219,7 +217,7 @@ if (empty($_SESSION['csrf_token'])) {
 
 
 
-                    <div style="height: 390px; overflow-y: auto;">
+                    <div style="height: 300px; overflow-y: auto; text-center">
                         <!-- Inventory Table -->
                         <table class="table table-striped table-bordered">
                             <thead>
