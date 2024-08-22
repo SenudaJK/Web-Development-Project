@@ -61,11 +61,7 @@ $role = $_SESSION['role'];
                         <li class="nav-item">
                             <a class="nav-link" href="shopIndex.php"><i class="material-icons md-18">store</i>Shops</a>
                         </li>
-                    </ul>
-                    <!-- Logout link at the bottom of the sidebar -->
-                    <div class="logout">
-                        <a href="logout.php"><i class="material-icons">logout</i>Log out</a>
-                    </div>
+                    </ul>                    
                 </div>
             </nav>
 
@@ -75,11 +71,14 @@ $role = $_SESSION['role'];
                 <!-- Header for the main content with title and user information -->
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">Suppliers</h1>
-                    <div class="text-right">
-                        <div id="username-container">
-                            <a id="username" href="#"><i class="material-icons" style="font-size:48px;">account_circle</i><?php echo htmlspecialchars($username); ?></a>
-                            <!-- <span>Role</span> -->
-                        </div>
+                    <div class="profile-container">
+                        <span href="#" class="d-flex align-items-center text-dark text-decoration-none">
+                            <i class="material-icons" style="font-size:48px;">account_circle</i>
+                            <div class="profile-text ms-2">
+                                <span><?php echo htmlspecialchars($username); ?></span>
+                                <span><?php echo htmlspecialchars($role); ?></span>
+                            </div>
+                        </span>                        
                     </div>
                 </div>
             <!-- Main content can be added here -->
@@ -98,6 +97,7 @@ $role = $_SESSION['role'];
                                             <input type="text" name="search" class="form-control me-2" placeholder="Search by Name" value="<?php echo isset($_GET['search']) ? $_GET['search'] : ''; ?>">
                                                 <button class="btn btn-outline-success" type="submit">Search</button>
                                         </form>
+                                        <!-- <input type="text" id="search" class="form-control" placeholder="Search by Supplier Name or Location" oninput="filterResults()"> -->
                                     </div>
                                 </div>
             
@@ -117,7 +117,7 @@ $role = $_SESSION['role'];
                                 if($result = $mysqli->query($sql)){
                                     if($result->num_rows > 0){
                                         echo '<div style="height: 300px; overflow-y: auto;">';
-                                        echo '<table class="table table-bordered table-striped text-center">';
+                                        echo '<table class="table table-bordered table-striped text-center" id=suppliertable>';
                                             echo "<thead>";
                                                 echo "<tr>";
                                                     echo "<th>SupplierID</th>";
@@ -197,16 +197,41 @@ $role = $_SESSION['role'];
     </div>
 
     <script>
-    var deleteModal = document.getElementById('deleteModal');
-    deleteModal.addEventListener('show.bs.modal', function (event) {
-        // Button that triggered the modal
-        var button = event.relatedTarget;
-        // Extract info from data-* attributes
-        var supplierID = button.getAttribute('data-supplierid');
-        // Update the modal's form hidden input value
-        var inputSupplierID = document.getElementById('deleteSupplierID');
-        inputSupplierID.value = supplierID;
-    });
+        var deleteModal = document.getElementById('deleteModal');
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            // Button that triggered the modal
+            var button = event.relatedTarget;
+            // Extract info from data-* attributes
+            var supplierID = button.getAttribute('data-supplierid');
+            // Update the modal's form hidden input value
+            var inputSupplierID = document.getElementById('deleteSupplierID');
+            inputSupplierID.value = supplierID;
+        });
+    
+        // function filterResults() {
+        //     var search = document.getElementById('search').value.toLowerCase();
+        //     var table = document.getElementById("suppliertable");
+        //     var rows = table.getElementsByTagName("tr");
+
+        //     for (var i = 1; i < rows.length; i++) { // Start at 1 to skip the header row
+        //         var cells = rows[i].getElementsByTagName("td");
+        //         var match = false;
+                
+        //         for (var j = 0; j < cells.length - 1; j++) { // Exclude the last cell (Action buttons)
+        //             var cellValue = cells[j].textContent || cells[j].innerText;
+        //             if (cellValue.toLowerCase().indexOf(search) > -1) {
+        //                 match = true;
+        //                 break;
+        //             }
+        //         }
+
+        //         if (match) {
+        //             rows[i].style.display = "";
+        //         } else {
+        //             rows[i].style.display = "none";
+        //         }
+        //     }
+        // }
     </script>
 </body>
 </html>
