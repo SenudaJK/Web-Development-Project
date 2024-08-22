@@ -1,20 +1,20 @@
 <?php
-include 'Connect.php';
+include 'config.php';
 
 if (isset($_GET['input'])) {
     $input = '%' . $_GET['input'] . '%';
     $sql = "SELECT 
-            so.SalesOrderID, p.ProductName, s.StoreName, so.Quantity, so.OrderDate
-            FROM salesOrders so
+            so.DispatchOrderID, p.ProductName, s.Man_name, so.Quantity, so.OrderDate
+            FROM dispatchorders so
             JOIN products p ON so.ProductID = p.ProductID
-            JOIN stores s ON so.StoreID = s.StoreID
-            WHERE so.SalesOrderID LIKE ? OR 
+            JOIN shop s ON so.ShopID = s.ShopID
+            WHERE so.DispatchOrderID LIKE ? OR 
             p.ProductName LIKE ? OR 
-            s.StoreName LIKE ? OR 
+            s.Man_name LIKE ? OR 
             so.Quantity LIKE ? OR 
             so.OrderDate LIKE ?
             ORDER BY so.OrderDate DESC";
-    $stmt = $conn->prepare($sql);
+    $stmt = $mysqli->prepare($sql);
     $stmt->bind_param("sssss", $input, $input, $input, $input, $input);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -39,16 +39,16 @@ if (isset($_GET['input'])) {
         echo '<tbody>';
 
         while ($row = $result->fetch_assoc()) {
-            $saleOrderID = $row['SalesOrderID'];
+            $saleOrderID = $row['DispatchOrderID'];
             $productName = $row['ProductName'];
-            $storeName = $row['StoreName'];
+            $Man_name = $row['Man_name'];
             $quantity = $row['Quantity'];
             $orderDate = $row['OrderDate'];
 
             echo '<tr>
                     <td>' . $saleOrderID . '</td>
                     <td>' . $productName . '</td>
-                    <td>' . $storeName . '</td>
+                    <td>' . $Man_name . '</td>
                     <td>' . $quantity . '</td>                                                                                                             
                     <td>' . $orderDate . '</td>
                     <td>
@@ -70,6 +70,7 @@ if (isset($_GET['input'])) {
         $result->free();
     }
     // Close connection
+
     $stmt->close();
-    mysqli_close($conn);
+    mysqli_close($mysqli);
 }

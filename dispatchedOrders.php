@@ -1,5 +1,12 @@
 <?php
 session_start();
+// Check if the user is logged in, if not redirect to login page
+if (!isset($_SESSION['username'])) {
+    header("Location: index.html");
+    exit();
+}
+$username = $_SESSION['username'];
+$role = $_SESSION['role'];
 ?>
 
 
@@ -13,7 +20,7 @@ session_start();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="sketch.css">
+    <link rel="stylesheet" href="style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 
@@ -43,31 +50,28 @@ session_start();
                     <!-- Sidebar navigation links -->
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link active" href=""><i class="material-icons">home</i>Dashboard</a>
+                            <a class="nav-link active" href="dashboard.php"><i class="material-icons">home</i>Dashboard</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">inventory</i>inventory</a>
+                            <a class="nav-link" href="InventoryUpdate.php"><i class="material-icons">inventory</i>inventory</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">category</i>Products</a>
+                            <a class="nav-link" href="productGet.php"><i class="material-icons">category</i>Products</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">shopping_cart</i>Purchase Orders</a>
+                            <a class="nav-link" href="purchaseView.php"><i class="material-icons">shopping_cart</i>Purchase Orders</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">sell</i>Dispatch Orders</a>
+                            <a class="nav-link" href="dispatchedOrders.php"><i class="material-icons">sell</i>Dispatch Orders</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">local_shipping</i>Suppliers</a>
+                            <a class="nav-link" href="suppliers.php"><i class="material-icons">local_shipping</i>Suppliers</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons md-18">report</i>Reports</a>
+                            <a class="nav-link" href="shopIndex.php"><i class="material-icons md-18">store</i>Shops</a>
                         </li>
                     </ul>
-                    <!-- Logout link at the bottom of the sidebar -->
-                    <div class="logout">
-                        <a href="#"><i class="material-icons">logout</i>Log out</a>
-                    </div>
+
                 </div>
             </nav>
 
@@ -77,11 +81,14 @@ session_start();
                 <!-- Header for the main content with title and user information -->
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">Dispatch Orders</h1>
-                    <div class="text-right">
-                        <div id="username-container">
-                            <a id="username" href="#"><i class="material-icons" style="font-size:48px;">account_circle</i>Username</a>
-                            <span>Role</span>
-                        </div>
+                    <div class="profile-container">
+                        <span href="#" class="d-flex align-items-center text-dark text-decoration-none">
+                            <i class="material-icons" style="font-size:48px;">account_circle</i>
+                            <div class="profile-text ms-2">
+                                <span><?php echo htmlspecialchars($username); ?></span>
+                                <span><?php echo htmlspecialchars($role); ?></span>
+                            </div>
+                        </span>
                     </div>
                 </div>
 
@@ -123,13 +130,13 @@ session_start();
                                 <div class="mt-1 mb-3 clearfix">
                                     <div class="d-flex justify-content-start align-items-center gap-2">
                                         <!-- place new order button -->
-                                        <a href="dispatchOrder.php" class="btn btn-success"><i class="fa fa-plus"></i> Place New Order</a>
+                                        <a href="dispatchOrder.php" class="btn btn-primary"><i class="fa fa-plus"></i> Place New Order</a>
                                         <form action="orderExport.php" method="post">
                                             <button type="submit"
                                                 name="export"
                                                 id="export-btn"
-                                                class="btn btn-success">
-                                                Export CSV
+                                                class="btn btn-primary">
+                                                Download CSV Report
                                             </button>
                                         </form>
                                     </div>
@@ -149,10 +156,10 @@ session_start();
                                         <table class="table table-hover" id="table">
                                             <thead style="position: sticky; top: 0; background-color: white; z-index: 100;">
                                                 <tr>
-                                                    <th scope="col">SalesOrderID</th>
+                                                    <th scope="col">DispatchOrderID</th>
                                                     <th scope="col">Product Name</th>
-                                                    <th scope="col">Store Name</th>
-                                                    <th scope="col">Location</th>
+                                                    <th scope="col">Manager Name</th>
+
                                                     <th scope="col">Quantity</th>
                                                     <th scope="col">Order Date</th>
                                                     <th scope="col">Operation</th>
@@ -163,49 +170,56 @@ session_start();
 
                                                 <?php
                                                 // connect to the database
-                                                include "Connect.php";
+                                                include "config.php";
 
                                                 //  query to select details about dispatched order
                                                 $sql = "SELECT 
-                                                        so.SalesOrderID, p.ProductName, s.StoreName, s.Location, so.Quantity, so.OrderDate
-                                                        FROM salesOrders so
+                                                        so.DispatchOrderID, p.ProductName, s.Man_name, so.Quantity, so.OrderDate
+                                                        FROM DispatchOrders so
                                                         JOIN products p ON so.ProductID = p.ProductID
-                                                        JOIN stores s ON so.StoreID = s.StoreID
+                                                        JOIN shop s ON so.ShopID = s.ShopID
                                                         ORDER BY so.OrderDate DESC
                                                         ";
 
-                                                //store results
-                                                $result = mysqli_query($conn, $sql);
+                                                //shop results
+                                                $result = mysqli_query($mysqli, $sql);
                                                 if (mysqli_num_rows($result) > 0) {
 
                                                     while ($row = mysqli_fetch_assoc($result)) {
-                                                        $saleOrderID = $row['SalesOrderID'];
+                                                        $saleOrderID = $row['DispatchOrderID'];
                                                         $productName = $row['ProductName'];
-                                                        $storeName = $row['StoreName'];
-                                                        $location = $row['Location'];
+                                                        $shopName = $row['Man_name'];
                                                         $quantity = $row['Quantity'];
                                                         $orderDate = $row['OrderDate'];
 
                                                         echo '<tr>
                                                         <td>' . $saleOrderID . '</td>
                                                         <td>' . $productName . '</td>
-                                                        <td>' . $storeName . '</td>
-                                                        <td>' . $location . '</td>
+                                                        <td>' . $shopName . '</td>
+                                                      
                                                         <td>' . $quantity . '</td>                                                                                                             
                                                         <td>' . $orderDate . '</td>
-                                                        <td>
-                                                            <button type="button" class="btn btn-link">
-                                                                <a href="orderUpdate.php?updateID=' . $saleOrderID . '" class="text-dark link-offset-2 link-underline link-underline-opacity-0">
-                                                                <i class="material-icons">edit</i>
-                                                                </a>
-                                                            </button>
-                                                            <button type="button" class="btn btn-link">
-                                                                <a href="orderDelete.php?deleteID=' . $saleOrderID . '" class="text-dark link-offset-2 link-underline link-underline-opacity-0">
-                                                                <i class="material-icons">delete</i>
-                                                                </a>
-                                                            </button>
-                                                        </td>
-                                                        </tr>';
+                                                        <td>';
+                                                        // <button type="button" class="btn btn-link">
+                                                        //     <a href="orderUpdate.php?updateID=' . $saleOrderID . '" class="text-dark link-offset-2 link-underline link-underline-opacity-0">
+                                                        //     <i class="material-icons">edit</i>
+                                                        //     </a>
+                                                        // </button>
+                                                        // <button type="button" class="btn btn-link">
+                                                        //     <a href="orderDelete.php?deleteID=' . $saleOrderID . '" class="text-dark link-offset-2 link-underline link-underline-opacity-0">
+                                                        //     <i class="material-icons">delete</i>
+                                                        //     </a>
+                                                        // </button>
+                                                        // check user role and display appropriate actions
+                                                        if ($_SESSION['role'] !== 'Worker') {
+                                                            echo "<a href='orderUpdate.php?updateID=$saleOrderID' class='link-dark'><i class='fa-solid fa-pen-to-square fs-5 me-3'></i></a>";
+                                                            echo "<a href='orderDelete.php?deleteID=$saleOrderID' class='link-dark'><i class='fa-solid fa-trash-alt fs-5'></i></a>";
+                                                        } else {
+                                                            echo "<i class='fa-solid fa-pen-to-square fs-5 me-3' style='color: gray; cursor: not-allowed;' title='Edit (disabled)'></i>";
+                                                            echo "<i class='fa-solid fa-trash-alt fs-5' style='color: gray; cursor: not-allowed;' title='Delete (disabled)'></i>";
+                                                        }
+
+                                                        echo '</td></tr>';
                                                     }
 
                                                     // Free result set
@@ -218,7 +232,7 @@ session_start();
                                                     }
                                                 }
                                                 // Close connection
-                                                mysqli_close($conn);
+                                                mysqli_close($mysqli);
                                                 ?>
                                             </tbody>
                                         </table>

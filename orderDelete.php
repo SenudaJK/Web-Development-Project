@@ -1,17 +1,17 @@
 <?php
 //use this to debug
-//die("Error executing query: " . mysqli_error($conn));
-include 'Connect.php';
+//die("Error executing query: " . mysqli_error($mysqli));
+include 'config.php';
 session_start();
 
 if (isset($_GET['deleteID'])) {
-    //get the SalesOrderID that want to be deleted
+    //get the DispatchOrderID that want to be deleted
     $deleteID = $_GET['deleteID'];
 
     $sqlDelete = "SELECT ProductID, Quantity
-                  FROM salesorders
-                  WHERE SalesOrderID = ?";
-    $stmt = $conn->prepare($sqlDelete);
+                  FROM DispatchOrders
+                  WHERE DispatchOrderID = ?";
+    $stmt = $mysqli->prepare($sqlDelete);
     $stmt->bind_param("i", $deleteID);
     $stmt->execute();
     $resultDelete = $stmt->get_result();
@@ -32,10 +32,10 @@ if (isset($_GET['deleteID'])) {
     $sqlInsertQuantity = "UPDATE Inventory
                           SET TotalQuantity = TotalQuantity + ?
                           WHERE ProductID = ?";
-    $stmt = $conn->prepare($sqlInsertQuantity);
+    $stmt = $mysqli->prepare($sqlInsertQuantity);
     $stmt->bind_param("ii", $deleteQuantity, $deleteProductID);
     $stmt->execute();
-    //$resultInsertQuantity = mysqli_query($conn, $sqlInsertQuantity);
+    //$resultInsertQuantity = mysqli_query($mysqli, $sqlInsertQuantity);
 
     //checking errors
     if ($stmt->affected_rows == 0) {
@@ -44,15 +44,15 @@ if (isset($_GET['deleteID'])) {
         //echo "Something went wrong with the inventory. Can not perform operation now.";
         exit;
         //used for debugging purposes
-        //die("Error executing query: " . mysqli_error($conn));
+        //die("Error executing query: " . mysqli_error($mysqli));
     }
 
-    //delete record from the salesorders table
-    $sql = "DELETE FROM `salesorders` WHERE SalesOrderID = ?";
-    $stmt = $conn->prepare($sql);
+    //delete record from the DispatchOrders table
+    $sql = "DELETE FROM `DispatchOrders` WHERE DispatchOrderID = ?";
+    $stmt = $mysqli->prepare($sql);
     $stmt->bind_param("i", $deleteID);
     $stmt->execute();
-    //$result = mysqli_query($conn, $sql);
+    //$result = mysqli_query($mysqli, $sql);
 
     if ($stmt->affected_rows > 0) {
         //to store alert messages
@@ -62,12 +62,12 @@ if (isset($_GET['deleteID'])) {
         $_SESSION['status'] = 'error';
         $_SESSION['operation'] = 'delete';
         //used for debugging purposes
-        //$error = mysqli_error($conn);
+        //$error = mysqli_error($mysqli);
         //die("Error deleting record: " . $error);
     }
     $stmt->close();
-    $conn->close();
-    //mysqli_close($conn);
+    $mysqli->close();
+    //mysqli_close($mysqli);
 }
 header('location: dispatchedOrders.php');
 exit;

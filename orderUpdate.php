@@ -1,21 +1,29 @@
 <?php
 //use this for debugging purposes
-//die("Error executing query: " . mysqli_error($conn));
+//die("Error executing query: " . mysqli_error($mysqli));
 
-//connect to the database
-include 'Connect.php';
+//mysqliect to the database
+include 'config.php';
 session_start();
+// Check if the user is logged in, if not redirect to login page
+if (!isset($_SESSION['username'])) {
+    header("Location: index.html");
+    exit();
+}
+$username = $_SESSION['username'];
+$role = $_SESSION['role'];
+
 
 $updateID = $_GET['updateID'];
 
 //to fill form with already assigned values
 $sqlFill = "SELECT
-            p.ProductName, s.StoreName, so.Quantity                                                       
-            FROM salesOrders so
+            p.ProductName, s.Man_name, so.Quantity                                                       
+            FROM dispatchorders so
             JOIN products p ON so.ProductID = p.ProductID
-            JOIN stores s ON so.StoreID = s.StoreID
-            WHERE SalesOrderID = ?";
-$stmtFill = $conn->prepare($sqlFill);
+            JOIN shop s ON so.ShopID = s.ShopID
+            WHERE DispatchOrderID = ?";
+$stmtFill = $mysqli->prepare($sqlFill);
 $stmtFill->bind_param("i", $updateID);
 $stmtFill->execute();
 $resultFill = $stmtFill->get_result();
@@ -30,7 +38,7 @@ if (!$resultFill) {
 
 $rowFill = $resultFill->fetch_assoc();
 $fillProductName = $rowFill['ProductName'];
-$fillStoreName = $rowFill['StoreName'];
+$fillMan_name = $rowFill['Man_name'];
 $fillQuantity = $rowFill['Quantity'];
 
 //get data from html
@@ -38,14 +46,14 @@ if (isset($_POST['confirm'])) {
 
     //declare variables
     $productName = $_POST['product-name']; //stored user entered product name
-    $storeName = $_POST['store-name']; //stored user entered store name
+    $Man_name = $_POST['store-name']; //stored user entered store name
     $quantity = $_POST['quantity']; //stored user entered quantity
 
     // Fetch productID using productName
     $sql = "SELECT ProductID 
             FROM products 
             WHERE ProductName = ?";
-    $stmtProduct = $conn->prepare($sql);
+    $stmtProduct = $mysqli->prepare($sql);
     $stmtProduct->bind_param("s", $productName);
     $stmtProduct->execute();
     $result = $stmtProduct->get_result();
@@ -64,12 +72,12 @@ if (isset($_POST['confirm'])) {
         $row = $result->fetch_assoc();
         $productID = $row['ProductID'];
 
-        //get StoreID using StoreName
-        $sqlStore = "SELECT StoreID 
-                     FROM stores 
-                     WHERE StoreName = ?";
-        $stmtStore = $conn->prepare($sqlStore);
-        $stmtStore->bind_param("s", $storeName);
+        //get ShopID using Man_name
+        $sqlStore = "SELECT ShopID 
+                     FROM shop 
+                     WHERE Man_name = ?";
+        $stmtStore = $mysqli->prepare($sqlStore);
+        $stmtStore->bind_param("s", $Man_name);
         $stmtStore->execute();
         $resultStore = $stmtStore->get_result();
 
@@ -81,13 +89,13 @@ if (isset($_POST['confirm'])) {
             //echo "Your request is can not be done now. Please try again later";
         } else {
             $rowStore = $resultStore->fetch_assoc();
-            $storeID = $rowStore['StoreID'];
+            $ShopID = $rowStore['ShopID'];
 
             // get TotalQuantity related to ProductID
             $sqlQuantity = "SELECT TotalQuantity 
                             FROM Inventory 
                             WHERE ProductID = ?";
-            $stmtQuantity = $conn->prepare($sqlQuantity);
+            $stmtQuantity = $mysqli->prepare($sqlQuantity);
             $stmtQuantity->bind_param("i", $productID);
             $stmtQuantity->execute();
             $resultQuantity = $stmtQuantity->get_result();
@@ -113,14 +121,14 @@ if (isset($_POST['confirm'])) {
             }
 
             // Insert updated dispatch order data into the salesOrder table
-            $sqlInsertQuery = "UPDATE salesorders
+            $sqlInsertQuery = "UPDATE dispatchorders
                                SET ProductID = ?,
-                               StoreID = ?,
+                               ShopID = ?,
                                Quantity = ?,
                                OrderDate = NOW()
-                               WHERE SalesOrderID = ?";
-            $stmtUpdate = $conn->prepare($sqlInsertQuery);
-            $stmtUpdate->bind_param("iiii", $productID, $storeID, $quantity, $updateID);
+                               WHERE DispatchOrderID = ?";
+            $stmtUpdate = $mysqli->prepare($sqlInsertQuery);
+            $stmtUpdate->bind_param("iiii", $productID, $ShopID, $quantity, $updateID);
 
             //display whether order is successfully dispatched or not
             if ($stmtUpdate->execute()) {
@@ -138,7 +146,7 @@ if (isset($_POST['confirm'])) {
                 $sqlUpdateQuantity = "UPDATE Inventory
                                       SET TotalQuantity = ?
                                       WHERE ProductID = ?";
-                $stmtUpdateQuantity = $conn->prepare($sqlUpdateQuantity);
+                $stmtUpdateQuantity = $mysqli->prepare($sqlUpdateQuantity);
                 $stmtUpdateQuantity->bind_param("ii", $updatedQuantity, $productID);
                 $stmtUpdateQuantity->execute();
 
@@ -162,126 +170,9 @@ if (isset($_POST['confirm'])) {
         }
     }
 }
-$conn->close();
+$mysqli->close();
 
 ?>
-
-<!-- <!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Dispatch Order</title>
-
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-        crossorigin="anonymous" />
-</head>
-
-<body>
-    <div class="container">
-        <div class="mb-3">
-            <h2>Update dispatch order</h2>
-        </div>
-        <form method="post">
-            <div class="mb-3">
-                <label>Product Name:</label>
-                <input
-                    type="text"
-                    class="form-control"
-                    id="product-name"
-                    name="product-name"
-                    value="<?php echo htmlspecialchars($fillProductName); ?>"
-                    placeholder="Search Product"
-                    required />
-                <div class="product-list" id="product-list"></div>
-            </div>
-
-            <div class="mb-3">
-                <label>Store Name:</label>
-                <input
-                    type="text"
-                    class="form-control"
-                    id="store-name"
-                    name="store-name"
-                    value="<?php echo htmlspecialchars($fillStoreName); ?>"
-                    placeholder="Search Store"
-                    required />
-                <div class="store-list" id="store-list"></div>
-            </div>
-
-            <div class="mb-3">
-                <label>Quantity:</label>
-                <input
-                    type="number"
-                    class="form-control"
-                    id="quantity"
-                    name="quantity"
-                    value="<?php echo htmlspecialchars($fillQuantity); ?>"
-                    placeholder="Enter Product Quantity"
-                    min="1"
-                    required />
-            </div>
-
-            <div class="mt-4">
-                <button type="submit"
-                    id="update-btn"
-                    name="confirm"
-                    class="btn btn-primary">
-                    Update
-                </button>
-                <button type="button" class="btn btn-secondary">
-                    <a href="dispatchedOrders.php" class="text-light link-offset-2 link-underline link-underline-opacity-0">Cancel</a>
-                </button>
-            </div>
-        </form>
-    </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
-    <script src="productList.js"></script>
-    <script src="storeList.js"></script>
-    <script>
-        //validate quantity
-        $(document).ready(function() {
-            $("#quantity").on("input", function() {
-                var value = $(this).val()
-                if (value < 1) {
-                    $(this).val('')
-                }
-            })
-        })
-    </script>
-    <script>
-        //validate all inputs
-        $(document).ready(function() {
-            function validateInputs() {
-                var productName = $("#product-name").val().trim();
-                var storeName = $("#store-name").val().trim();
-                var quantity = $("#quantity").val().trim();
-
-                if (productName == "" || storeName == "" || quantity < 1) {
-                    $("#update-btn").attr("disabled", true);
-                } else {
-                    $("#update-btn").attr("disabled", false);
-                }
-            }
-            $("#product-name, #store-name, #quantity").on("input", function() {
-                validateInputs();
-            })
-
-            validateInputs();
-        })
-    </script>
-</body>
-
-</html> -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -316,31 +207,28 @@ $conn->close();
                     <!-- Sidebar navigation links -->
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link active" href=""><i class="material-icons">home</i>Dashboard</a>
+                            <a class="nav-link active" href="dashboard.php"><i class="material-icons">home</i>Dashboard</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">inventory</i>inventory</a>
+                            <a class="nav-link" href="InventoryUpdate.php"><i class="material-icons">inventory</i>inventory</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">category</i>Products</a>
+                            <a class="nav-link" href="productGet.php"><i class="material-icons">category</i>Products</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">shopping_cart</i>Purchase Orders</a>
+                            <a class="nav-link" href="purchaseView.php"><i class="material-icons">shopping_cart</i>Purchase Orders</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">sell</i>Dispatch Orders</a>
+                            <a class="nav-link" href="dispatchedOrders.php"><i class="material-icons">sell</i>Dispatch Orders</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">local_shipping</i>Suppliers</a>
+                            <a class="nav-link" href="suppliers.php"><i class="material-icons">local_shipping</i>Suppliers</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons md-18">report</i>Reports</a>
+                            <a class="nav-link" href="shopIndex.php"><i class="material-icons md-18">store</i>Shops</a>
                         </li>
                     </ul>
-                    <!-- Logout link at the bottom of the sidebar -->
-                    <div class="logout">
-                        <a href="#"><i class="material-icons">logout</i>Log out</a>
-                    </div>
+
                 </div>
             </nav>
 
@@ -387,7 +275,7 @@ $conn->close();
                                     class="form-control"
                                     id="store-name"
                                     name="store-name"
-                                    value="<?php echo htmlspecialchars($fillStoreName); ?>"
+                                    value="<?php echo htmlspecialchars($fillMan_name); ?>"
                                     placeholder="Search Store"
                                     required />
                                 <div class="store-list" id="store-list"></div>
@@ -444,10 +332,10 @@ $conn->close();
         $(document).ready(function() {
             function validateInputs() {
                 var productName = $("#product-name").val().trim();
-                var storeName = $("#store-name").val().trim();
+                var Man_name = $("#store-name").val().trim();
                 var quantity = $("#quantity").val().trim();
 
-                if (productName == "" || storeName == "" || quantity < 1) {
+                if (productName == "" || Man_name == "" || quantity < 1) {
                     $("#update-btn").attr("disabled", true);
                 } else {
                     $("#update-btn").attr("disabled", false);

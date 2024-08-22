@@ -1,24 +1,31 @@
 <?php
 //use for debugging purposes
-//die("Error executing query: " . mysqli_error($conn));
+//die("Error executing query: " . mysqli_error($mysqli));
 
 //connect to the database
-include 'Connect.php';
+include 'config.php';
 session_start();
+// Check if the user is logged in, if not redirect to login page
+if (!isset($_SESSION['username'])) {
+    header("Location: index.html");
+    exit();
+}
+$username = $_SESSION['username'];
+$role = $_SESSION['role'];
 
 //get data from html
 if (isset($_POST['confirm'])) {
 
     //declare variables
     $productName = $_POST['product-name']; //stored user entered product name
-    $storeName = $_POST['store-name']; //stored user entered store name
+    $Man_name = $_POST['store-name']; //stored user entered store name
     $quantity = $_POST['quantity']; //stored user entered quantity
 
     // Fetch productID using productName
     $sql = "SELECT ProductID 
             FROM products 
             WHERE ProductName = ?";
-    $stmt = $conn->prepare($sql);
+    $stmt = $mysqli->prepare($sql);
     $stmt->bind_param("s", $productName);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -36,15 +43,16 @@ if (isset($_POST['confirm'])) {
         $row = $result->fetch_assoc();
         $productID = $row['ProductID'];
 
-        $sqlStore = "SELECT StoreID 
-                    FROM stores 
-                    WHERE StoreName = ?";
-        $stmtStore = $conn->prepare($sqlStore);
-        $stmtStore->bind_param("s", $storeName);
+        $sqlStore = "SELECT ShopID 
+                    FROM shop 
+                    WHERE Man_name = ?";
+        $stmtStore = $mysqli->prepare($sqlStore);
+        $stmtStore->bind_param("s", $Man_name);
         $stmtStore->execute();
         $resultStore = $stmtStore->get_result();
 
         if (!$resultStore || $resultStore->num_rows == 0) {
+
             $_SESSION['status'] = 'error';
             $_SESSION['operation'] = 'place';
             header('location: dispatchedOrders.php');
@@ -52,23 +60,24 @@ if (isset($_POST['confirm'])) {
             //echo "Your request is can not be done now. Please try again later";
         } else {
             $rowStore = $resultStore->fetch_assoc();
-            $storeID = $rowStore['StoreID'];
+            $ShopID = $rowStore['ShopID'];
 
             // get TotalQuantity related to ProductID
             $sqlQuantity = "SELECT TotalQuantity 
-                             FROM Inventory 
+                             FROM inventory 
                              WHERE ProductID = ?";
-            $stmtQuantity = $conn->prepare($sqlQuantity);
+            $stmtQuantity = $mysqli->prepare($sqlQuantity);
             $stmtQuantity->bind_param("i", $productID);
             $stmtQuantity->execute();
             $resultQuantity = $stmtQuantity->get_result();
 
             if (!$resultQuantity || $resultQuantity->num_rows == 0) {
+
                 $_SESSION['status'] = 'error';
                 $_SESSION['operation'] = 'place';
                 header('location: dispatchedOrders.php');
                 exit;
-                //echo "Inventory not found.";
+                //echo "inventory not found.";
             }
 
             $rowQuantity = mysqli_fetch_assoc($resultQuantity);
@@ -76,6 +85,7 @@ if (isset($_POST['confirm'])) {
 
             // check available quantity is enough to update an order
             if ($quantity > $availableQuantity) {
+
                 $_SESSION['status'] = 'error';
                 $_SESSION['operation'] = 'place';
                 header('location: dispatchedOrders.php');
@@ -86,22 +96,23 @@ if (isset($_POST['confirm'])) {
             // Insert dispatch order data into the salesOrder table
             $updatedQuantity = $availableQuantity - $quantity;
             if ($updatedQuantity < 0) {
+
                 $_SESSION['status'] = 'error';
                 $_SESSION['operation'] = 'place';
                 header('location: dispatchedOrders.php');
                 exit;
             } else {
-                $sqlUpdateQuantity = "UPDATE Inventory
+                $sqlUpdateQuantity = "UPDATE inventory
                                       SET TotalQuantity = ?
                                       WHERE ProductID = ?";
-                $stmtUpdateQuantity = $conn->prepare($sqlUpdateQuantity);
+                $stmtUpdateQuantity = $mysqli->prepare($sqlUpdateQuantity);
                 $stmtUpdateQuantity->bind_param("ii", $updatedQuantity, $productID);
 
                 if ($stmtUpdateQuantity->execute()) {
-                    $sqlInsertQuery = "INSERT INTO salesorders (ProductID, StoreID, quantity, orderDate)
+                    $sqlInsertQuery = "INSERT INTO dispatchorders (ProductID, ShopID, quantity, orderDate)
                                        VALUES (?, ?, ?, NOW())";
-                    $stmtInsert = $conn->prepare($sqlInsertQuery);
-                    $stmtInsert->bind_param("iii", $productID, $storeID, $quantity);
+                    $stmtInsert = $mysqli->prepare($sqlInsertQuery);
+                    $stmtInsert->bind_param("iii", $productID, $ShopID, $quantity);
 
 
                     if ($stmtInsert->execute()) {
@@ -117,6 +128,7 @@ if (isset($_POST['confirm'])) {
                         //echo "Order placed successfully!";
                     }
                 } else {
+
                     $_SESSION['status'] = 'error';
                     $_SESSION['operation'] = 'place';
                     //echo "can not perform the action";
@@ -127,7 +139,7 @@ if (isset($_POST['confirm'])) {
         }
     }
 }
-mysqli_close($conn);
+mysqli_close($mysqli);
 
 ?>
 
@@ -141,7 +153,7 @@ mysqli_close($conn);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="sketch.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -163,31 +175,28 @@ mysqli_close($conn);
                     <!-- Sidebar navigation links -->
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link active" href=""><i class="material-icons">home</i>Dashboard</a>
+                            <a class="nav-link active" href="dashboard.php"><i class="material-icons">home</i>Dashboard</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">inventory</i>inventory</a>
+                            <a class="nav-link" href="InventoryUpdate.php"><i class="material-icons">inventory</i>inventory</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">category</i>Products</a>
+                            <a class="nav-link" href="productGet.php"><i class="material-icons">category</i>Products</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">shopping_cart</i>Purchase Orders</a>
+                            <a class="nav-link" href="purchaseView.php"><i class="material-icons">shopping_cart</i>Purchase Orders</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">sell</i>Dispatch Orders</a>
+                            <a class="nav-link" href="dispatchedOrders.php"><i class="material-icons">sell</i>Dispatch Orders</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">local_shipping</i>Suppliers</a>
+                            <a class="nav-link" href="suppliers.php"><i class="material-icons">local_shipping</i>Suppliers</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons md-18">report</i>Reports</a>
+                            <a class="nav-link" href="shopIndex.php"><i class="material-icons md-18">store</i>Shops</a>
                         </li>
                     </ul>
-                    <!-- Logout link at the bottom of the sidebar -->
-                    <div class="logout">
-                        <a href="#"><i class="material-icons">logout</i>Log out</a>
-                    </div>
+
                 </div>
             </nav>
 
@@ -197,11 +206,14 @@ mysqli_close($conn);
                 <!-- Header for the main content with title and user information -->
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">Dispatch Orders</h1>
-                    <div class="text-right">
-                        <div id="username-container">
-                            <a id="username" href="#"><i class="material-icons" style="font-size:48px;">account_circle</i>Username</a>
-                            <span>Role</span>
-                        </div>
+                    <div class="profile-container">
+                        <span href="#" class="d-flex align-items-center text-dark text-decoration-none">
+                            <i class="material-icons" style="font-size:48px;">account_circle</i>
+                            <div class="profile-text ms-2">
+                                <span><?php echo htmlspecialchars($username); ?></span>
+                                <span><?php echo htmlspecialchars($role); ?></span>
+                            </div>
+                        </span>
                     </div>
                 </div>
                 <!-- Main content can be added here -->
@@ -290,10 +302,10 @@ mysqli_close($conn);
                     $(document).ready(function() {
                         function validateInputs() {
                             var productName = $("#product-name").val().trim();
-                            var storeName = $("#store-name").val().trim();
+                            var Man_name = $("#store-name").val().trim();
                             var quantity = $("#quantity").val().trim();
 
-                            if (productName == "" || storeName == "" || quantity < 1) {
+                            if (productName == "" || Man_name == "" || quantity < 1) {
                                 $("#confirm-btn").attr("disabled", true);
                             } else {
                                 $("#confirm-btn").attr("disabled", false);

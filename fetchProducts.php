@@ -1,7 +1,7 @@
 <?php
 
 // Check the query is successful executed
-include 'Connect.php';
+include 'config.php';
 
 //get user typings into 'query'
 if (isset($_POST['query'])) {
@@ -11,7 +11,7 @@ if (isset($_POST['query'])) {
     $sql = "SELECT ProductName 
             FROM products 
             WHERE ProductName LIKE '$query%'";
-    $result = mysqli_query($conn, $sql);
+    $result = mysqli_query($mysqli, $sql);
 
     //show matching item list in list group
     if (mysqli_num_rows($result) > 0) {

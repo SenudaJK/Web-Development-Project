@@ -1,16 +1,16 @@
 <?php
-include 'Connect.php';
+include 'config.php';
 
 if (isset($_POST['export'])) {
     // Fetch data from Inventory
     $sql = "SELECT 
-                so.SalesOrderID, p.ProductName, s.StoreName, s.Location, so.Quantity, so.OrderDate
-            FROM salesOrders so
+            so.DispatchOrderID, p.ProductName, s.Man_name, so.Quantity, so.OrderDate
+            FROM dispatchorders so
             JOIN products p ON so.ProductID = p.ProductID
-            JOIN stores s ON so.StoreID = s.StoreID
+            JOIN shop s ON so.ShopID = s.ShopID
             ORDER BY so.OrderDate DESC";
 
-    $result = $conn->query($sql);
+    $result = $mysqli->query($sql);
 
     if ($result->num_rows > 0) {
         // Set headers for CSV download
@@ -20,7 +20,7 @@ if (isset($_POST['export'])) {
         $output = fopen('php://output', 'w');
 
         // Output column headings
-        fputcsv($output, array('SalesOrder ID', 'Product Name', 'Store Name', 'Location', 'Quantity', 'Order Date'));
+        fputcsv($output, array('Dispatch ID', 'Product Name', 'Manager Name', 'Quantity', 'Order Date'));
 
         // Output data rows
         while ($row = $result->fetch_assoc()) {
@@ -33,5 +33,5 @@ if (isset($_POST['export'])) {
     }
 }
 
-$conn->close();
+$mysqli->close();
 exit();
