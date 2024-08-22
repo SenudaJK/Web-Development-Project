@@ -215,11 +215,14 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                 <!-- Header for the main content with title and user information -->
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">Shop</h1>
-                    <div class="text-right">
-                        <div id="username-container">
-                            <a id="username" href="#"><i class="material-icons" style="font-size:48px;">account_circle</i><?php echo htmlspecialchars($username); ?></a>
-                            
-                        </div>
+                    <div class="profile-container">
+                        <span href="#" class="d-flex align-items-center text-dark text-decoration-none">
+                            <i class="material-icons" style="font-size:48px;">account_circle</i>
+                            <div class="profile-text ms-2">
+                                <span><?php echo htmlspecialchars($username); ?></span>
+                                <span><?php echo htmlspecialchars($role); ?></span>
+                            </div>
+                        </span>                        
                     </div>
                 </div>
             <!-- Main content can be added here -->
