@@ -72,7 +72,7 @@ Before you begin, ensure you have the following installed on your machine:
 
 - **Login**: Access the login page via `login.php`.
 - **Dashboard**: The main dashboard is accessible after logging in.
-- **CRUD Operations**: Manage products, suppliers, and purchases through the respective pages.
+- **CRUD Operations**: Manage products, suppliers, inventory and purchases through the respective pages.
 - **CSV Export**: Export inventory, purchase orders, and dispatch orders to CSV format using the provided links or buttons.
 
 ## Troubleshooting
