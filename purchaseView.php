@@ -11,10 +11,6 @@ $username = $_SESSION['username'];
 $role = $_SESSION['role'];
 ?>
 
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,22 +22,6 @@ $role = $_SESSION['role'];
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <style> 
-       
-        main {
-         
-         padding: 20px; 
-        }
-
-        .d-flex {
-          margin-top: 20px;
-         }
-
-         
-
-         
-     
-     </style>
 </head>
 <body>
     
@@ -84,10 +64,7 @@ $role = $_SESSION['role'];
                             <a class="nav-link" href="shopIndex.php"><i class="material-icons md-18">store</i>Shops</a>
                         </li>
                     </ul>
-                    <!-- Logout link at the bottom of the sidebar -->
-                    <div class="logout">
-                        <a href="logout.php"><i class="material-icons">logout</i>Log out</a>
-                    </div>
+                    
                 </div>
             </nav>
 
@@ -96,39 +73,37 @@ $role = $_SESSION['role'];
                 
                 <!-- Header for the main content with title and user information -->
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2"> Order Details</h1>
-                    <div class="text-right">
-                        
-                        <div id="username-container">
-                            <a id="username" href="#"><i class="material-icons" style="font-size:48px;">account_circle</i><?php echo htmlspecialchars($username); ?></a>
-                            <!-- <span><?php echo htmlspecialchars($role); ?></span> -->
-                        </div>
+                    <h1 class="h2"> Purchase Orders</h1>
+                    <div class="profile-container">
+                        <span href="#" class="d-flex align-items-center text-dark text-decoration-none">
+                            <i class="material-icons" style="font-size:48px;">account_circle</i>
+                            <div class="profile-text ms-2">
+                                <span><?php echo htmlspecialchars($username); ?></span>
+                                <span><?php echo htmlspecialchars($role); ?></span>
+                            </div>
+                        </span>                        
                     </div>
                 </div>
             <!-- Main content can be added here -->
                 
-                
+                <!-- Search bar with real-time filtering -->
                 <div class ="display_table" >
                 
-                <a href="purchaseOrder.php" class="btn btn-success" ><i class="fa fa-plus"></i> Add New Purchase</a>
-                <button id="downloadCSV" class="btn btn-primary me-2 mr-5">Download CSV Report</button> <br><br>
-                <div class="input-group mb-5">
-                    <!-- Search bar with real-time filtering -->
-                    <input type="text" id="search" class="form-control" placeholder="Search by Product Name or Supplier Name" oninput="filterResults()">
-                    
-
-                </div>
+                <a href="purchaseOrder.php" class="btn btn-primary mb-4" ><i class="fa fa-plus"></i> Add New Purchase</a>
+                <button id="downloadCSV" class="btn btn-primary mb-4" style="margin-bottom: 1rem;">Download CSV Report</button><br><br>
                 
+                <div class="input-group mb-5">
+                    <input type="text" id="search" class="form-control" placeholder="Search by Product Name or Supplier Name" oninput="filterResults()">
+                </div>
                 <?php
                     // Include config file
                     require_once "config.php";
                     
                     // Attempt select query execution
-                    $sql = "SELECT ps.PurchaseOrderID, ps.QuantityOrdered, ps.QuantityRecieved, ps.UnitPrice, ps.OrderDate, ps.Status, p.ProductName, s.SupplierName FROM products p, purchaseorders ps, suppliers s WHERE ps.ProductID = p.ProductID AND ps.SupplierID = s.SupplierID ORDER BY ps.PurchaseOrderID ;
-";
+                    $sql = "SELECT ps.PurchaseOrderID, ps.QuantityOrdered, ps.QuantityRecieved, ps.UnitPrice, ps.OrderDate, ps.Status, p.ProductName, s.SupplierName FROM products p, purchaseorders ps, suppliers s WHERE ps.ProductID = p.ProductID AND ps.SupplierID = s.SupplierID ORDER BY ps.PurchaseOrderID ;";
                     if($result = $mysqli->query($sql)){
                         if($result->num_rows > 0){
-                            echo '<div style="height: 390px; overflow-y: auto;">';
+                            echo '<div style="height: 320px; overflow-y: auto;">';
                             echo '<table class="table table-bordered table-striped" id="ordertable">';
                                 echo "<thead>";
                                     echo "<tr>";
@@ -160,17 +135,17 @@ $role = $_SESSION['role'];
 
                                     
                                         echo "<td>";
-                                            
-                                            if ($role !== 'Worker') {
-                                                // If the role is not 'worker', display the active links
-                                                echo '<a href="purchaseRead.php?id='. $row['PurchaseOrderID'] .'" class="mr-2" title="View more information" data-toggle="tooltip"><span class="fa fa-eye"></span></a>';echo "&nbsp&nbsp";
+                                        if ($role !== 'Worker') {
+                                            // If the role is not 'worker', display the active links
+                                            echo '<a href="purchaseRead.php?id='. $row['PurchaseOrderID'] .'" class="mr-2" title="View more information" data-toggle="tooltip"><span class="fa fa-eye"></span></a>';
+                                            echo "&nbsp&nbsp";
                                             echo '<a href="purchaseUpdate.php?id='. $row['PurchaseOrderID'] .'" class="mr-2" title="Update Quantity & Status" data-toggle="tooltip"><span class="fa fa-pencil"></span></a>';
-                                            } else {
-                                                // If the role is 'worker', display disabled icons without links
-                                                echo "<i class='fa fa-eye fs-5 me-3' style='color: gray; cursor: not-allowed;' title='View (disabled)'></i>";
-                                                echo "&nbsp;&nbsp;";
-                                                echo "<i class='fa fa-pencil fs-5' style='color: gray; cursor: not-allowed;' title='Update (disabled)'></i>";
-                                            }
+                                        } else {
+                                            // If the role is 'worker', display disabled icons without links
+                                            echo '<span class="fa fa-eye" style="color: gray; cursor: not-allowed;" title="View more information (disabled)"></span>';
+                                            echo "&nbsp&nbsp";
+                                            echo '<span class="fa fa-pencil" style="color: gray; cursor: not-allowed;" title="Update Quantity & Status (disabled)"></span>';
+                                        }
                                         echo "</td>";
                                     echo "</tr>";
                                 }
@@ -198,39 +173,35 @@ $role = $_SESSION['role'];
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-       function filterResults() {
-    var search = document.getElementById('search').value.toLowerCase();
-    var table = document.getElementById("ordertable");
-    var rows = table.getElementsByTagName("tr");
+        function filterResults() {
+            var search = document.getElementById('search').value.toLowerCase();
+            var table = document.getElementById("ordertable");
+            var rows = table.getElementsByTagName("tr");
 
-    for (var i = 1; i < rows.length; i++) { // Start at 1 to skip the header row
-        var productNameCell = rows[i].getElementsByTagName("td")[1]; // Product Name column (2nd column)
-        var supplierNameCell = rows[i].getElementsByTagName("td")[2]; // Supplier Name column (3rd column)
-        var match = false;
+            for (var i = 1; i < rows.length; i++) { // Start at 1 to skip the header row
+                var cells = rows[i].getElementsByTagName("td");
+                var match = false;
+                
+                for (var j = 0; j < cells.length - 1; j++) { // Exclude the last cell (Action buttons)
+                    var cellValue = cells[j].textContent || cells[j].innerText;
+                    if (cellValue.toLowerCase().indexOf(search) > -1) {
+                        match = true;
+                        break;
+                    }
+                }
 
-        if (productNameCell && supplierNameCell) {
-            var productNameValue = productNameCell.textContent || productNameCell.innerText;
-            var supplierNameValue = supplierNameCell.textContent || supplierNameCell.innerText;
-
-            // Check if the search term matches either Product Name or Supplier Name
-            if (productNameValue.toLowerCase().indexOf(search) > -1 || supplierNameValue.toLowerCase().indexOf(search) > -1) {
-                match = true;
+                if (match) {
+                    rows[i].style.display = "";
+                } else {
+                    rows[i].style.display = "none";
+                }
             }
         }
-
-        if (match) {
-            rows[i].style.display = "";
-        } else {
-            rows[i].style.display = "none";
-        }
-    }
-} 
-
-document.getElementById('downloadCSV').addEventListener('click', function() {
+        
+        document.getElementById('downloadCSV').addEventListener('click', function() {
                         window.location.href = 'purchaseCSV.php';
-                    })
-
-
+                    })
+    
     </script>
 </body>
 </html>
