@@ -79,6 +79,30 @@ CREATE TABLE productreceiveddate (
 
 DELIMITER $$
 
+CREATE TRIGGER after_purchase_order_update
+AFTER UPDATE ON PurchaseOrders
+FOR EACH ROW
+BEGIN
+    UPDATE Inventory i
+    JOIN Products p ON i.ProductID = p.ProductID
+    SET 
+        i.ProductName = p.ProductName,
+        i.Brand = p.Brand,
+        i.Type = p.Type,
+        i.SKU = p.SKU,
+        i.TotalQuantity = COALESCE(i.TotalQuantity, 0) - COALESCE(OLD.QuantityRecieved, 0) + COALESCE(NEW.QuantityRecieved, 0),
+        i.LastReceivedDate = GREATEST(COALESCE(i.LastReceivedDate, '1900-01-01'), COALESCE(NEW.OrderDate, '1900-01-01')),
+        i.TotalValue = COALESCE(i.TotalValue, 0) - COALESCE(OLD.QuantityRecieved, 0) * COALESCE(OLD.UnitPrice, 0) 
+                     + COALESCE(NEW.QuantityRecieved, 0) * COALESCE(NEW.UnitPrice, 0)
+    WHERE i.ProductID = NEW.ProductID;
+END$$
+
+DELIMITER ;
+
+
+
+DELIMITER $$
+
 CREATE TRIGGER after_purchase_order_insert
 AFTER INSERT ON PurchaseOrders
 FOR EACH ROW
@@ -90,54 +114,18 @@ BEGIN
         p.Brand,
         p.Type,
         p.SKU,
-        SUM(po.QuantityRecieved) AS TotalQuantity,
-        MAX(po.OrderDate) AS LastReceivedDate,
-        SUM(po.QuantityRecieved * po.UnitPrice) AS TotalValue
+        COALESCE(NEW.QuantityRecieved, 0),
+        COALESCE(NEW.OrderDate, '1900-01-01'),
+        COALESCE(NEW.QuantityRecieved, 0) * COALESCE(NEW.UnitPrice, 0)
     FROM 
-        PurchaseOrders po
-    JOIN 
-        Products p ON po.ProductID = p.ProductID
+        Products p
     WHERE 
         p.ProductID = NEW.ProductID
-    GROUP BY 
-        p.ProductID, p.ProductName, p.Brand, p.Type, p.SKU
     ON DUPLICATE KEY UPDATE 
-        TotalQuantity = VALUES(TotalQuantity),
-        LastReceivedDate = VALUES(LastReceivedDate),
-        TotalValue = VALUES(TotalValue);
+        TotalQuantity = COALESCE(Inventory.TotalQuantity, 0) + COALESCE(NEW.QuantityRecieved, 0),
+        LastReceivedDate = GREATEST(COALESCE(Inventory.LastReceivedDate, '1900-01-01'), COALESCE(NEW.OrderDate, '1900-01-01')),
+        TotalValue = COALESCE(Inventory.TotalValue, 0) + COALESCE(NEW.QuantityRecieved, 0) * COALESCE(NEW.UnitPrice, 0);
 END$$
 
 DELIMITER ;
 
-DELIMITER $$
-
-CREATE TRIGGER after_purchase_order_update
-AFTER UPDATE ON PurchaseOrders
-FOR EACH ROW
-BEGIN
-    -- Update Inventory based on the new values
-    INSERT INTO Inventory (ProductID, ProductName, Brand, Type, SKU, TotalQuantity, LastReceivedDate, TotalValue)
-    SELECT 
-        p.ProductID,
-        p.ProductName,
-        p.Brand,
-        p.Type,
-        p.SKU,
-        SUM(po.QuantityRecieved) AS TotalQuantity,
-        MAX(po.OrderDate) AS LastReceivedDate,
-        SUM(po.QuantityRecieved * po.UnitPrice) AS TotalValue
-    FROM 
-        PurchaseOrders po
-    JOIN 
-        Products p ON po.ProductID = p.ProductID
-    WHERE 
-        p.ProductID = NEW.ProductID
-    GROUP BY 
-        p.ProductID, p.ProductName, p.Brand, p.Type, p.SKU
-    ON DUPLICATE KEY UPDATE 
-        TotalQuantity = VALUES(TotalQuantity),
-        LastReceivedDate = VALUES(LastReceivedDate),
-        TotalValue = VALUES(TotalValue);
-END$$
-
-DELIMITER ;
