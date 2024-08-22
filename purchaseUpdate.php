@@ -7,18 +7,6 @@ require_once "config.php";
 $receivedqty = $status = $orderedQty = "";
 $receivedqty_err = $status_err = "";
 
-
-session_start(); // Start session
-
-// Check if the user is logged in, if not redirect to login page
-if (!isset($_SESSION['username'])) {
-    header("Location: index.html");
-    exit();
-}
-
-$username = $_SESSION['username'];
-$role = $_SESSION['role'];
-
 // Check if `id` is set and is a valid value
 if (isset($_POST["id"]) && !empty(trim($_POST["id"]))) {
     // Handle POST request
@@ -156,7 +144,7 @@ if (isset($_POST["id"]) && !empty(trim($_POST["id"]))) {
     $mysqli->close();
 } else {
     // URL doesn't contain id parameter. Redirect to error page
-    header("location: error.php");
+    header("location: purchaseError.php");
     exit();
 }
 
@@ -189,14 +177,12 @@ if (isset($_POST["id"]) && !empty(trim($_POST["id"]))) {
         }
         #sidebar {
     
-         position: fixed; /* Keeps the sidebar in place while scrolling */
+         position: fixed; 
         }
         main {
          margin-left: 250px; 
          padding: 20px; 
-        }
-
-        
+        }        
 
          #customAlert {
            width: 50%; 
@@ -205,30 +191,10 @@ if (isset($_POST["id"]) && !empty(trim($_POST["id"]))) {
         }
 
         .alert {
-          position: fixed; 
-          
-          top: 0; /* Center vertically */
-          left: 50%; /* Center horizontally */
-
+          position: fixed;          
+          top: 0; /* Center vertically*/          
           z-index: 9999; /* Ensure it appears above other content */
           }
-
-          @media (max-width: 767px) {
-            #sidebar {
-                position: relative;
-                width: 100%;
-                height: auto;
-            }
-
-            main {
-                margin-left: 0;
-            }
-
-            .table-responsive {
-                overflow-x: auto;
-                
-            }
-        }
 
 
     </style>
@@ -254,7 +220,7 @@ if (isset($_POST["id"]) && !empty(trim($_POST["id"]))) {
                     </div>
                     <!-- Sidebar navigation links -->
                     <ul class="nav flex-column">
-                        <li class="nav-item">
+                    <li class="nav-item">
                             <a class="nav-link active" href="dashboard.php"><i class="material-icons">home</i>Dashboard</a>
                         </li>
                         <li class="nav-item">
@@ -276,10 +242,7 @@ if (isset($_POST["id"]) && !empty(trim($_POST["id"]))) {
                             <a class="nav-link" href="shopIndex.php"><i class="material-icons md-18">store</i>Shops</a>
                         </li>
                     </ul>
-                    <!-- Logout link at the bottom of the sidebar -->
-                    <div class="logout">
-                        <a href="#"><i class="material-icons">logout</i>Log out</a>
-                    </div>
+                    
                 </div>
             </nav>
 
@@ -290,11 +253,14 @@ if (isset($_POST["id"]) && !empty(trim($_POST["id"]))) {
                 <div
                     class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">Update Purchase</h1>
-                    <div class="text-right">
-                    <div id="username-container">
-                            <a id="username" href="#"><i class="material-icons" style="font-size:48px;">account_circle</i><?php echo htmlspecialchars($username); ?></a>
-                            <!-- <span><?php echo htmlspecialchars($role); ?></span> -->
-                        </div>
+                    <div class="profile-container">
+                        <span href="#" class="d-flex align-items-center text-dark text-decoration-none">
+                            <i class="material-icons" style="font-size:48px;">account_circle</i>
+                            <div class="profile-text ms-2">
+                                <span><?php echo htmlspecialchars($username); ?></span>
+                                <span><?php echo htmlspecialchars($role); ?></span>
+                            </div>
+                        </span>                        
                     </div>
                 </div>
                 <!-- Main content form -->
@@ -310,7 +276,7 @@ if (isset($_POST["id"]) && !empty(trim($_POST["id"]))) {
                     <div class="form-group">
                         <label>Status</label>
                         <select name="status" class="form-control selectpicker <?php echo (!empty( $status_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $status; ?>">
-                             <option value="">Select the Status</option>
+                             <option value="">Select a product</option>
                             <option value="Pending" >Pending</option>
                             <option value="In-Progress" >In-Progress</option>
                             <option value="Complete" >Complete</option>
