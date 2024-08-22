@@ -1,16 +1,3 @@
-<?php
-session_start(); // Start session
-
-// Check if the user is logged in, if not redirect to login page
-if (!isset($_SESSION['username'])) {
-    header("Location: index.html");
-    exit();
-}
-
-$username = $_SESSION['username'];
-$role = $_SESSION['role'];
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -25,24 +12,6 @@ $role = $_SESSION['role'];
 
     
 </head>
-<style>
-     @media (max-width: 767px) {
-            #sidebar {
-                position: relative;
-                width: 100%;
-                height: auto;
-            }
-
-            main {
-                margin-left: 0;
-            }
-
-            .table-responsive {
-                overflow-x: auto;
-                
-            }
-        }
-    </style>
 
 <body>
     <div class="container-fluid">
@@ -64,31 +33,27 @@ $role = $_SESSION['role'];
                     <!-- Sidebar navigation links -->
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link active" href="dashboard.php"><i class="material-icons">home</i>Dashboard</a>
+                            <a class="nav-link active" href=""><i class="material-icons">home</i>Dashboard</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="InventoryUpdate.php"><i class="material-icons">inventory</i>inventory</a>
+                            <a class="nav-link" href="#"><i class="material-icons">inventory</i>inventory</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="productGet.php"><i class="material-icons">category</i>Products</a>
+                            <a class="nav-link" href="#"><i class="material-icons">category</i>Products</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="purchaseView.php"><i class="material-icons">shopping_cart</i>Purchase Orders</a>                            
+                            <a class="nav-link" href="#"><i class="material-icons">shopping_cart</i>Purchase Orders</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">sell</i>Dispatch Orders</a>                            
+                            <a class="nav-link" href="#"><i class="material-icons">sell</i>Dispatch Orders</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="suppliers.php"><i class="material-icons">local_shipping</i>Suppliers</a>
+                            <a class="nav-link" href="#"><i class="material-icons">local_shipping</i>Suppliers</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="shopIndex.php"><i class="material-icons md-18">store</i>Shops</a>
+                            <a class="nav-link" href="#"><i class="material-icons md-18">store</i>Stores</a>
                         </li>
-                    </ul>
-                    <!-- Logout link at the bottom of the sidebar -->
-                    <div class="logout">
-                        <a href="#"><i class="material-icons">logout</i>Log out</a>
-                    </div>
+                    </ul>                    
                 </div>
             </nav>
 
@@ -99,11 +64,14 @@ $role = $_SESSION['role'];
                 <div
                     class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">More Indormation</h1>
-                    <div class="text-right">
-                    <div id="username-container">
-                            <a id="username" href="#"><i class="material-icons" style="font-size:48px;">account_circle</i><?php echo htmlspecialchars($username); ?></a>
-                            <!-- <span><?php echo htmlspecialchars($role); ?></span> -->
-                        </div>
+                    <div class="profile-container">
+                        <span href="#" class="d-flex align-items-center text-dark text-decoration-none">
+                            <i class="material-icons" style="font-size:48px;">account_circle</i>
+                            <div class="profile-text ms-2">
+                                <span><?php echo htmlspecialchars($username); ?></span>
+                                <span><?php echo htmlspecialchars($role); ?></span>
+                            </div>
+                        </span>                        
                     </div>
                 </div>
                 <!-- Main content can be added here -->
