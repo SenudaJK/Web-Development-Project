@@ -87,7 +87,7 @@ if (empty($_SESSION['csrf_token'])) {
                             <a class="nav-link" href="shopIndex.php"><i class="material-icons md-18">store</i>Shops</a>
                         </li>
                     </ul>
-                   
+                    
                 </div>
             </nav>
 
@@ -109,17 +109,7 @@ if (empty($_SESSION['csrf_token'])) {
                 </div>
 
                 <?php
-                // Database connection
-                $servername = "localhost:3307";
-                $username = "root";
-                $password = "";
-                $dbname = "camera_warehouse";
-
-                $conn = new mysqli($servername, $username, $password, $dbname);
-
-                if ($conn->connect_error) {
-                    die("Connection failed: " . $conn->connect_error);
-                }
+                require_once "Config.php";
 
                 // Handle quantity update
                 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['updateQuantity'])) {
@@ -131,7 +121,7 @@ if (empty($_SESSION['csrf_token'])) {
                     $quantityToRemove = $_POST['quantity'];
 
                     // Fetch the current details for the product from Inventory
-                    $stmt = $conn->prepare("SELECT TotalQuantity, TotalValue, (TotalValue / TotalQuantity) AS UnitPrice FROM Inventory WHERE ProductID = ?");
+                    $stmt = $mysqli->prepare("SELECT TotalQuantity, TotalValue, (TotalValue / TotalQuantity) AS UnitPrice FROM Inventory WHERE ProductID = ?");
                     $stmt->bind_param("i", $productID);
                     $stmt->execute();
                     $result = $stmt->get_result();
@@ -148,7 +138,7 @@ if (empty($_SESSION['csrf_token'])) {
                             $newTotalValue = $newQuantity * $unitPrice;
 
                             // Update Inventory table with new values
-                            $stmt = $conn->prepare("UPDATE Inventory SET TotalQuantity = ?, TotalValue = ? WHERE ProductID = ?");
+                            $stmt = $mysqli->prepare("UPDATE Inventory SET TotalQuantity = ?, TotalValue = ? WHERE ProductID = ?");
                             $stmt->bind_param("idi", $newQuantity, $newTotalValue, $productID);
                             if ($stmt->execute()) {
                                 echo "<div class='alert alert-success fade-away' role='alert'>Inventory updated successfully!</div>";
@@ -169,18 +159,18 @@ if (empty($_SESSION['csrf_token'])) {
 
                 // Fetch data from Inventory
                 $sql = "SELECT * FROM Inventory";
-                $result = $conn->query($sql);
+                $result = $mysqli->query($sql);
 
                 if (!$result) {
-                    die("Error executing query: " . $conn->error);
+                    die("Error executing query: " . $mysqli->error);
                 }
 
                 // Fetch distinct brands and types for the dropdowns
                 $brandSql = "SELECT DISTINCT Brand FROM Inventory";
-                $brandResult = $conn->query($brandSql);
+                $brandResult = $mysqli->query($brandSql);
 
                 $typeSql = "SELECT DISTINCT Type FROM Inventory";
-                $typeResult = $conn->query($typeSql);
+                $typeResult = $mysqli->query($typeSql);
                 ?>
 
                 <div class="container mt-5">
@@ -220,7 +210,7 @@ if (empty($_SESSION['csrf_token'])) {
 
                     <div style="height: 300px; overflow-y: auto;">
                         <!-- Inventory Table -->
-                        <table class="table table-striped table-bordered">
+                        <table class="table table-striped table-bordered text-center">
                             <thead>
                                 <tr>
                                     <th>Product ID</th>
