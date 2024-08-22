@@ -26,7 +26,7 @@ Before you begin, ensure you have the following installed on your machine:
 
 1. **Clone the repository** (if you have access to version control):
     ```bash
-    git clone https://your-repository-url.git
+    git clone https://github.com/SenudaJK/Web-Development-Project
     ```
 
 2. **Navigate to the project directory**:
