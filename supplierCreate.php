@@ -12,7 +12,7 @@ $username = $_SESSION['username'];
 $role = $_SESSION['role'];
 
 // Include config file
-require_once "Config.php";
+require_once "config.php";
  
 // Define variables and initialize with empty values
 $name = $location = $email = "";
@@ -157,12 +157,15 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 
                 <!-- Header for the main content with title and user information -->
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Supplier</h1>
-                    <div class="text-right">
-                        <div id="username-container">
-                            <a id="username" href="#"><i class="material-icons" style="font-size:48px;">account_circle</i><?php echo htmlspecialchars($username); ?></a>
-                            
-                        </div>
+                    <h1 class="h2">Suppliers</h1>
+                    <div class="profile-container">
+                        <span href="#" class="d-flex align-items-center text-dark text-decoration-none">
+                            <i class="material-icons" style="font-size:48px;">account_circle</i>
+                            <div class="profile-text ms-2">
+                                <span><?php echo htmlspecialchars($username); ?></span>
+                                <span><?php echo htmlspecialchars($role); ?></span>
+                            </div>
+                        </span>                        
                     </div>
                 </div>
             <!-- Main content can be added here -->
