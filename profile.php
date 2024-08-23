@@ -8,6 +8,7 @@ if (!isset($_SESSION['username'])) {
 }
 
 $username = $_SESSION['username'];
+$role = $_SESSION['role'];
 
 // Include config file
 require_once 'config.php';
@@ -127,7 +128,7 @@ $mysqli->close();
                             <a class="nav-link" href="purchaseView.php"><i class="material-icons">shopping_cart</i>Purchase Orders</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">sell</i>Dispatch Orders</a>
+                            <a class="nav-link" href="dispatchedOrders.php"><i class="material-icons">sell</i>Dispatch Orders</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="suppliers.php"><i class="material-icons">local_shipping</i>Suppliers</a>
@@ -172,6 +173,7 @@ $mysqli->close();
                         <div class="col-md-4"><?php echo htmlspecialchars($user['Role']); ?></div>
                     </div>
                     <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal"> Edit Profile</button>
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteProfileModal"> Delete Profile</button>
                 </div>
             </main>
         </div>
@@ -180,33 +182,51 @@ $mysqli->close();
     <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <!-- Form to change profile pic/name/role -->
-                <form id="edit-profile-form" action="update_profile.php" method="post" enctype="multipart/form-data">
-                <div class="mb-3">
-                    <label for="PhoneNumber" class="form-label">Phone Number:</label>
-                    <input type="text" id="PhoneNumber" name="PhoneNumber" class="form-control" required>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-
-                <div class="mb-3">
-                    <label for="password" class="form-label">New Password:</label>
-                    <input type="password" id="password" name="password" class="form-control">
+                <div class="modal-body">
+                    <!-- Form to change profile pic/name/role -->
+                    <form id="edit-profile-form" action="update_profile.php" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="PhoneNumber" class="form-label">Phone Number:</label>
+                            <input type="text" id="PhoneNumber" name="PhoneNumber" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">New Password:</label>
+                            <input type="password" id="password" name="password" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label for="con-password" class="form-label">Confirm Password:</label>
+                            <input type="password" id="con-password" name="con-password" class="form-control">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
                 </div>
-
-                <div class="mb-3">
-                    <label for="con-password" class="form-label">Confirm Password:</label>
-                    <input type="password" id="con-password" name="con-password" class="form-control">
-                </div>
-
-                <button type="submit" class="btn btn-primary">Save Changes</button>
-                </form>
-            </div>
             </div>
         </div>
+    </div>
+
+    <div class="modal fade" id="deleteProfileModal" tabindex="-1" aria-labelledby="deleteProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteProfileModalLabel">Delete Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form to delete profile -->
+                    <form id="delete-profile-form" action="profileDelete.php" method="post">
+                        <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+                        <button type="submit" class="btn btn-danger">Delete Account</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 </body>
 </html>
