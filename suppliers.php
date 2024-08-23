@@ -53,7 +53,7 @@ $role = $_SESSION['role'];
                             <a class="nav-link" href="purchaseView.php"><i class="material-icons">shopping_cart</i>Purchase Orders</a>                            
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">sell</i>Dispatch Orders</a>                            
+                            <a class="nav-link" href="dispatchedOrders.php"><i class="material-icons">sell</i>Dispatch Orders</a>                            
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="suppliers.php"><i class="material-icons">local_shipping</i>Suppliers</a>
@@ -138,14 +138,10 @@ $role = $_SESSION['role'];
                                                         
                                                     if ($role !== 'Worker') {
                                                         echo "<a href='supplierUpdate.php?id=" . $row['SupplierID'] . "' class='link-dark'><i class='fa-solid fa-pen-to-square fs-5 me-3'></i></a>";
-                                                        echo "  ";
-                                                        echo "<a href='#' class='link-dark' data-bs-toggle='modal' data-bs-target='#deleteModal' data-supplierid='" . $row['SupplierID'] . "'><i class='fa-solid fa-trash fs-5'></i></a>";
                                                         
                                                     } else {
                                                         // If the role is 'worker', disable the buttons
                                                         echo "<i class='fa-solid fa-pen-to-square fs-5 me-3' style='color: gray; cursor: not-allowed;' title='Edit (disabled)'></i>";
-                                                        echo "  ";
-                                                        echo "<i class='fa-solid fa-trash fs-5' style='color: gray; cursor: not-allowed;' title='Delete (disabled)'></i>";                                                       
                                                     }
                                                 echo "</tr>";
                                             }
