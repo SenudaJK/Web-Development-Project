@@ -4,7 +4,7 @@ $(document).ready(function () {
     var query = $(this).val();
     if (query.length > 0) {
       $.ajax({
-        url: "fetchStores.php",
+        url: "dispatchFetchStores.php",
         method: "POST",
         data: { query: query },
         success: function (data) {
