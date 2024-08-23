@@ -1,5 +1,5 @@
 body{
-    background-color: #E3FEF7;
+    background-color: #E3FEF7;       
 }
 
 .sidebar {
@@ -33,26 +33,30 @@ body{
     border-radius: 25px;
 }
 
-#username{
+.profile-container {
     display: flex;
     align-items: center;
-    justify-content: center;
-    color: black;
-    text-decoration: none;    
+    padding: 10px 20px;
+    background-color: #f5f5f5;
+    border-radius: 25px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    font-family: Arial, sans-serif;
+    color: #000;
+    font-size: 14px;
+    max-width: 300px;
 }
-
-#username-container {
+.profile-container i {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+.profile-container .profile-text {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    color: black;
-    text-decoration: none;
-
 }
-
-#username-container span {
-    margin-top: -15px;
-    margin-right: -10px; 
+.profile-container .profile-text span {
+    font-weight: bold;
 }
 
 .logout a{
