@@ -131,7 +131,7 @@ $role = $_SESSION['role'];
                                     <div class="d-flex justify-content-start align-items-center gap-2">
                                         <!-- place new order button -->
                                         <a href="dispatchOrder.php" class="btn btn-primary"><i class="fa fa-plus"></i> Place New Order</a>
-                                        <form action="orderExport.php" method="post">
+                                        <form action="dispatchOrderCSV.php" method="post">
                                             <button type="submit"
                                                 name="export"
                                                 id="export-btn"
@@ -142,7 +142,7 @@ $role = $_SESSION['role'];
                                     </div>
 
                                     <div class="d-flex justify-content-between align-items-center mt-3">
-                                        <form method="GET" action="search.php" class="d-flex align-items-center w-46">
+                                        <form method="GET" action="dispatchSearch.php" class="d-flex align-items-center w-46">
                                             <input
                                                 type="text"
                                                 name="search"
@@ -152,7 +152,7 @@ $role = $_SESSION['role'];
                                         </form>
                                     </div>
                                     <br>
-                                    <div style="height: 780px; overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;">
+                                    <div style="height: 350px; overflow-y: auto;">
                                         <table class="table table-hover" id="table">
                                             <thead style="position: sticky; top: 0; background-color: white; z-index: 100;">
                                                 <tr>
@@ -200,20 +200,11 @@ $role = $_SESSION['role'];
                                                         <td>' . $quantity . '</td>                                                                                                             
                                                         <td>' . $orderDate . '</td>
                                                         <td>';
-                                                        // <button type="button" class="btn btn-link">
-                                                        //     <a href="orderUpdate.php?updateID=' . $saleOrderID . '" class="text-dark link-offset-2 link-underline link-underline-opacity-0">
-                                                        //     <i class="material-icons">edit</i>
-                                                        //     </a>
-                                                        // </button>
-                                                        // <button type="button" class="btn btn-link">
-                                                        //     <a href="orderDelete.php?deleteID=' . $saleOrderID . '" class="text-dark link-offset-2 link-underline link-underline-opacity-0">
-                                                        //     <i class="material-icons">delete</i>
-                                                        //     </a>
-                                                        // </button>
+                                                        
                                                         // check user role and display appropriate actions
                                                         if ($_SESSION['role'] !== 'Worker') {
-                                                            echo "<a href='orderUpdate.php?updateID=$saleOrderID' class='link-dark'><i class='fa-solid fa-pen-to-square fs-5 me-3'></i></a>";
-                                                            echo "<a href='orderDelete.php?deleteID=$saleOrderID' class='link-dark'><i class='fa-solid fa-trash-alt fs-5'></i></a>";
+                                                            echo "<a href='dispatchOrderUpdate.php?updateID=$saleOrderID' class='link-dark'><i class='fa-solid fa-pen-to-square fs-5 me-3'></i></a>";
+                                                            echo "<a href='dispatchOrderDelete.php?deleteID=$saleOrderID' class='link-dark'><i class='fa-solid fa-trash-alt fs-5'></i></a>";
                                                         } else {
                                                             echo "<i class='fa-solid fa-pen-to-square fs-5 me-3' style='color: gray; cursor: not-allowed;' title='Edit (disabled)'></i>";
                                                             echo "<i class='fa-solid fa-trash-alt fs-5' style='color: gray; cursor: not-allowed;' title='Delete (disabled)'></i>";
@@ -252,7 +243,7 @@ $role = $_SESSION['role'];
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="searchList.js"></script>
+    <script src="dispatchSearchList.js"></script>
 
     <!-- alert function created by @senuda -->
     <script>
