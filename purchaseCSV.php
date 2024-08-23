@@ -8,20 +8,11 @@ if (!isset($_SESSION['username'])) {
 }
 
 // Database connection
-$servername = "localhost:4306";
-$username = "root";
-$password = "";
-$dbname = "camera_warehouse";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+require_once "Config.php";
 
 // Fetch data from Inventory
 $sql = "SELECT ps.PurchaseOrderID, p.ProductName,s.SupplierName, ps.QuantityOrdered, ps.QuantityRecieved, ps.UnitPrice, ps.OrderDate  FROM products p, purchaseorders ps, suppliers s WHERE ps.ProductID = p.ProductID AND ps.SupplierID = s.SupplierID ORDER BY ps.PurchaseOrderID ;";
-$result = $conn->query($sql);
+$result = $mysqli->query($sql);
 
 if ($result->num_rows > 0) {
     // Set headers for CSV download
@@ -43,7 +34,7 @@ if ($result->num_rows > 0) {
     echo "No records found.";
 }
 
-$conn->close();
+$mysqli->close();
 exit();
 ?>
 
