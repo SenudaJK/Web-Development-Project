@@ -53,12 +53,12 @@ if (isset($_GET['input'])) {
                     <td>' . $orderDate . '</td>
                     <td>
                         <button type="button" class="btn btn-link">
-                            <a href="orderUpdate.php?updateID=' . $saleOrderID . '" class="text-dark link-offset-2 link-underline link-underline-opacity-0">
+                            <a href="dispatchOrderUpdate.php?updateID=' . $saleOrderID . '" class="text-dark link-offset-2 link-underline link-underline-opacity-0">
                                 <i class="material-icons">edit</i>
                             </a>
                         </button>
                         <button type="button" class="btn btn-link">
-                            <a href="orderDelete.php?deleteID=' . $saleOrderID . '" class="text-dark link-offset-2 link-underline link-underline-opacity-0">
+                            <a href="dispatchOrderDelete.php?deleteID=' . $saleOrderID . '" class="text-dark link-offset-2 link-underline link-underline-opacity-0">
                                 <i class="material-icons">delete</i>
                             </a>
                         </button>
