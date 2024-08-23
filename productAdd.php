@@ -9,13 +9,13 @@ if (isset($_POST['submit'])) {
     $sku = $_POST['sku'];
     $dateAdded = $_POST['dateadded'];
 
-    $stmt = $conn->prepare("INSERT INTO products (ProductName, Brand, Type, SKU, DateAdded) VALUES (?, ?, ?, ?, ?)");
+    $stmt = $mysqli->prepare("INSERT INTO products (ProductName, Brand, Type, SKU, DateAdded) VALUES (?, ?, ?, ?, ?)");
     
     if ($stmt) {
         $stmt->bind_param("sssss", $productName, $brand, $type, $sku, $dateAdded);
         
         if ($stmt->execute()) {
-            header("Location: Getproduct.php?msg=New record created successfully");
+            header("Location: productGet.php?msg=New record created successfully");
             exit();
         } else {
             echo "Failed: " . $stmt->error;
@@ -27,5 +27,5 @@ if (isset($_POST['submit'])) {
     }
 }
 
-$conn->close();
+$mysqli->close();
 ?>
