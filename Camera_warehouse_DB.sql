@@ -39,9 +39,10 @@ CREATE TABLE DispatchOrders (
   DispatchOrderID INT AUTO_INCREMENT PRIMARY KEY,
   ProductID INT,
   Quantity INT,
-  UnitPrice DECIMAL(10, 2),
   OrderDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (ProductID) REFERENCES products(ProductID)
+  ShopID INT,
+  FOREIGN KEY (ProductID) REFERENCES products(ProductID),
+  FOREIGN KEY (ShopID) REFERENCES shop(ShopID)
 );
 
 CREATE TABLE PurchaseOrders (
