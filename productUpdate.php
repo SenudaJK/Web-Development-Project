@@ -1,13 +1,26 @@
+<?php
+session_start(); // Start session
+
+// Check if the user is logged in, if not redirect to login page
+if (!isset($_SESSION['username'])) {
+    header("Location: index.html");
+    exit();
+}
+
+$username = $_SESSION['username'];
+$role = $_SESSION['role'];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Name</title>
+    <title>Product Update</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="sketch.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container-fluid">
@@ -27,32 +40,29 @@
                     </div>
                     <!-- Sidebar navigation links -->
                     <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link active" href=""><i class="material-icons">home</i>Dashboard</a>
+                    <li class="nav-item">
+                            <a class="nav-link active" href="dashboard.php"><i class="material-icons">home</i>Dashboard</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">inventory</i>inventory</a>
+                            <a class="nav-link" href="InventoryUpdate.php"><i class="material-icons">inventory</i>inventory</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">category</i>Products</a>
+                            <a class="nav-link" href="productGet.php"><i class="material-icons">category</i>Products</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">shopping_cart</i>Purchase Orders</a>                            
+                            <a class="nav-link" href="purchaseView.php"><i class="material-icons">shopping_cart</i>Purchase Orders</a>                            
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#"><i class="material-icons">sell</i>Dispatch Orders</a>                            
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">local_shipping</i>Suppliers</a>
+                            <a class="nav-link" href="suppliers.php"><i class="material-icons">local_shipping</i>Suppliers</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons md-18">store</i>Stores</a>
+                            <a class="nav-link" href="shopIndex.php"><i class="material-icons md-18">store</i>Shops</a>
                         </li>
                     </ul>
-                    <!-- Logout link at the bottom of the sidebar -->
-                    <div class="logout">
-                        <a href="#"><i class="material-icons">logout</i>Log out</a>
-                    </div>
+                    
                 </div>
             </nav>
 
@@ -61,12 +71,15 @@
                 
                 <!-- Header for the main content with title and user information -->
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">name</h1>
-                    <div class="text-right">
-                        <div id="username-container">
-                            <a id="username" href="#"><i class="material-icons" style="font-size:48px;">account_circle</i>Username</a>
-                            <span>Role</span>
-                        </div>
+                    <h1 class="h2">Product</h1>
+                    <div class="profile-container">
+                        <span href="#" class="d-flex align-items-center text-dark text-decoration-none">
+                            <i class="material-icons" style="font-size:48px;">account_circle</i>
+                            <div class="profile-text ms-2">
+                                <span><?php echo htmlspecialchars($username); ?></span>
+                                <span><?php echo htmlspecialchars($role); ?></span>
+                            </div>
+                        </span>                        
                     </div>
                 </div>
             <!-- Main content can be added here -->
@@ -80,16 +93,17 @@
                     $type = $_POST['type'];
                     $sku = $_POST['sku'];
                     $dateAdded = $_POST['dateadded'];
+                    $status = $_POST['status'];
 
-                    $sql = "UPDATE `products` SET `ProductName`=?, `Brand`=?, `Type`=?, `SKU`=?, `DateAdded`=? WHERE ProductID=?";
+                    $sql = "UPDATE `products` SET `ProductName`=?, `Brand`=?, `Type`=?, `SKU`=?, `DateAdded`=?, `status`=? WHERE ProductID=?";
 
-                    $stmt = $conn->prepare($sql);
+                    $stmt = $mysqli->prepare($sql);
 
                     if ($stmt) {
-                        $stmt->bind_param("sssssi", $productName, $brand, $type, $sku, $dateAdded, $Product_Id);
+                        $stmt->bind_param("ssssssi", $productName, $brand, $type, $sku, $dateAdded, $status, $Product_Id);
 
                         if ($stmt->execute()) {
-                            header("Location: Getproduct.php?msg=Record Updated successfully");
+                            header("Location: productGet.php?msg=Record Updated successfully");
                             exit();
                         } else {
                             echo "Failed: " . $stmt->error;
@@ -97,13 +111,10 @@
 
                         $stmt->close();
                     } else {
-                        echo "Failed to prepare the statement: " . $conn->error;
+                        echo "Failed to prepare the statement: " . $mysqli->error;
                         }
                     }
             ?>
-                <div class="text-center mb-4">
-                <h2>Products</h2>
-            </div>
 
             <div class="container">
                 <div class="text-center mb-5">
@@ -112,7 +123,7 @@
 
                 <?php
                 $sql = "SELECT * FROM `products` WHERE ProductID = $Product_Id LIMIT 1";
-                $result = mysqli_query($conn,$sql);
+                $result = mysqli_query($mysqli,$sql);
                 $row = mysqli_fetch_assoc($result);
                 ?>
 
@@ -150,10 +161,19 @@
                                 <small id="dateAddedError" class="text-danger"></small>
                             </div>
 
+                            <div class="mb-4">
+                                <label class="form-label">Status:</label>
+                                <select name="status" class="form-control selectpicker" required>
+                                    <option value="">Select the Status</option>
+                                    <option value="Continue" >Continue</option>
+                                    <option value="Not-Continue" >Not-Continue</option>                                    
+                                </select>
+                            </div>
+
 
                             <div>
                                 <button type="submit" class="btn btn-success" name="submit">Update</button>
-                                <a href="Getproduct.php" class="btn btn-danger">Cancel</a>
+                                <a href="productGet.php" class="btn btn-danger">Cancel</a>
                             </div>
                         </div>
                     </form>
@@ -161,7 +181,7 @@
             </div>
 
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-            <script src="Validations.js"></script>              
+            <script src="productValidations.js"></script>              
             
             </main>
         </div>
