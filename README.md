@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This web-based application is designed to manage the warehouse operations of a CameraShop. It provides functionalities for user authentication, managing products, suppliers, and purchases, and generating CSV reports real-time updates and track purchase orders, dispatch orders and inventory. The application facilitates efficient inventory management and product issuance to relevant shops.
+This web-based application is designed to manage the warehouse operations of a CameraShop. It provides functionalities for user authentication, managing products, suppliers, and purchases, as well as generating CSV reports, real-time updates, and tracking purchase orders, dispatch orders, and inventory. The application facilitates efficient inventory management and product issuance to relevant shops.
 
 ## Project Structure
 
@@ -72,8 +72,13 @@ Before you begin, ensure you have the following installed on your machine:
 
 - **Login**: Access the login page via `login.php`.
 - **Dashboard**: The main dashboard is accessible after logging in.
-- **CRUD Operations**: Manage products, suppliers, inventory and purchases through the respective pages.
+- **CRUD Operations**: Manage products, suppliers, inventory, and purchases through the respective pages.
 - **CSV Export**: Export inventory, purchase orders, and dispatch orders to CSV format using the provided links or buttons.
+
+## User Roles & Permissions
+
+- **Admin**: The admin has full access to all features of the application, including creating, updating, and deleting products, suppliers, inventory, purchase orders, and dispatch orders.
+- **Worker**: Workers have view-only access to the application. They can view products, suppliers, inventory, purchase orders, and dispatch orders but cannot make any changes.
 
 ## Troubleshooting
 
