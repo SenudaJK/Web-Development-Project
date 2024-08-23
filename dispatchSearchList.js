@@ -6,7 +6,7 @@ $(document).ready(function () {
 
     if (input != "") {
       $.ajax({
-        url: "search.php",
+        url: "dispatchSearch.php",
         method: "GET",
         data: { input: input },
 
