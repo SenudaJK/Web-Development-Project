@@ -184,7 +184,7 @@ $mysqli->close();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="sketch.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -238,16 +238,19 @@ $mysqli->close();
                 <!-- Header for the main content with title and user information -->
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">Dispatch Orders</h1>
-                    <div class="text-right">
-                        <div id="username-container">
-                            <a id="username" href="#"><i class="material-icons" style="font-size:48px;">account_circle</i>Username</a>
-                            <span>Role</span>
-                        </div>
+                    <div class="profile-container">
+                        <span href="#" class="d-flex align-items-center text-dark text-decoration-none">
+                            <i class="material-icons" style="font-size:48px;">account_circle</i>
+                            <div class="profile-text ms-2">
+                                <span><?php echo htmlspecialchars($username); ?></span>
+                                <span><?php echo htmlspecialchars($role); ?></span>
+                            </div>
+                        </span>                        
                     </div>
                 </div>
                 <!-- Main content can be added here -->
 
-                <!--methana idala oyalage part eka gahanna-->
+                
                 <div class="container">
                     <div class="row">
                         <div class="col-12 col-md-6 mb-3">
@@ -314,8 +317,8 @@ $mysqli->close();
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
-    <script src="productList.js"></script>
-    <script src="storeList.js"></script>
+    <script src="dispatchProductList.js"></script>
+    <script src="dispatchStoreList.js"></script>
     <script>
         //validate quantity
         $(document).ready(function() {
