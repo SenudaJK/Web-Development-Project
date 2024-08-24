@@ -40,11 +40,11 @@ $role = $_SESSION['role'];
                     </div>
                     <!-- Sidebar navigation links -->
                     <ul class="nav flex-column">
-                        <li class="nav-item">
+                    <li class="nav-item">
                             <a class="nav-link active" href="dashboard.php"><i class="material-icons">home</i>Dashboard</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="InventoryUpdate.php"><i class="material-icons">inventory</i>inventory</a>
+                            <a class="nav-link" href="InventoryUpdate.php"><i class="material-icons">inventory</i>Inventory</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="productGet.php"><i class="material-icons">category</i>Products</a>
@@ -53,7 +53,7 @@ $role = $_SESSION['role'];
                             <a class="nav-link" href="purchaseView.php"><i class="material-icons">shopping_cart</i>Purchase Orders</a>                            
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">sell</i>Dispatch Orders</a>                            
+                            <a class="nav-link" href="dispatchedOrders.php"><i class="material-icons">sell</i>Dispatch Orders</a>                            
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="suppliers.php"><i class="material-icons">local_shipping</i>Suppliers</a>
