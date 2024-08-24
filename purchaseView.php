@@ -135,17 +135,16 @@ $role = $_SESSION['role'];
 
                                     
                                         echo "<td>";
-                                        if ($role !== 'Worker') {
-                                            // If the role is not 'worker', display the active links
-                                            echo '<a href="purchaseRead.php?id='. $row['PurchaseOrderID'] .'" class="mr-2" title="View more information" data-toggle="tooltip"><span class="fa fa-eye"></span></a>';
-                                            echo "&nbsp&nbsp";
+                                         echo '<a href="purchaseRead.php?id='. $row['PurchaseOrderID'] .'" class="mr-2" title="View more information" data-toggle="tooltip"><span class="fa fa-eye"></span></a>';echo "&nbsp&nbsp";
+                                            if ($role !== 'Worker') {
+                                                // If the role is not 'worker', display the active links
+                                                
                                             echo '<a href="purchaseUpdate.php?id='. $row['PurchaseOrderID'] .'" class="mr-2" title="Update Quantity & Status" data-toggle="tooltip"><span class="fa fa-pencil"></span></a>';
-                                        } else {
-                                            // If the role is 'worker', display disabled icons without links
-                                            echo '<span class="fa fa-eye" style="color: gray; cursor: not-allowed;" title="View more information (disabled)"></span>';
-                                            echo "&nbsp&nbsp";
-                                            echo '<span class="fa fa-pencil" style="color: gray; cursor: not-allowed;" title="Update Quantity & Status (disabled)"></span>';
-                                        }
+                                            } else {
+                                                // If the role is 'worker', display disabled icon without links
+                                                
+                                                echo "<i class='fa fa-pencil fs-5' style='color: gray; cursor: not-allowed;' title='Update (disabled)'></i>";
+                                            }
                                         echo "</td>";
                                     echo "</tr>";
                                 }
