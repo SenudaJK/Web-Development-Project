@@ -78,9 +78,9 @@ if (isset($_POST["id"]) && !empty(trim($_POST["id"]))) {
                     $stmt->bind_param("ii", $id,$receivedqty);
                     if ($stmt->execute()) {
                         // Records created successfully. Redirect to same page
-                        echo "<div class='alert alert-success text-center mx-auto my-3 alert-dismissible fade show' role='alert' id ='customAlert'>
+                        echo "<div class='alert alert-success text-center mx-auto my-3 fade-away' role='alert' id ='customAlert'>
                                     Succesfully updated
-                                    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                                    
                             </div>";
                                
                   
@@ -88,30 +88,30 @@ if (isset($_POST["id"]) && !empty(trim($_POST["id"]))) {
                         
                     } else {
                         
-                        echo "<div class='alert alert-danger alert-dismissible fade show' role='alert' id ='customAlert'>
+                        echo "<div class='alert alert-danger fade-away' role='alert' id ='customAlert'>
                                     Oops! Something went wrong. Please try again later.
-                                    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                                    
                             </div>";
                     }
                 } else {
                     
-                    echo "<div class='alert alert-danger alert-dismissible fade show' role='alert'id ='customAlert'>
+                    echo "<div class='alert alert-danger fade-away' role='alert'id ='customAlert'>
                                     Failed to prepare update SQL statement.
-                                    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                                    
                             </div>";
 
                 }
 
             } else {
-                echo "<div class='alert alert-danger alert-dismissible fade show' role='alert'id ='customAlert'>
+                echo "<div class='alert alert-danger fade-away' role='alert'id ='customAlert'>
                 Oops! Something went wrong. Please try again later.
-                <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                
                      </div>";
             }
         } else {
-            echo "<div class='alert alert-danger alert-dismissible fade show' role='alert'id ='customAlert'>
+            echo "<div class='alert alert-danger fade-away' role='alert'id ='customAlert'>
                                     Failed to prepare update SQL statement.
-                                    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                                    
                  </div>";
 
         }
@@ -203,9 +203,19 @@ if (isset($_POST["id"]) && !empty(trim($_POST["id"]))) {
 
         .alert {
           position: fixed;          
-          top: 0; /* Center vertically*/          
+          top: 0; /* Center vertically*/    
+          left: 40%; /* Center horizontally */      
           z-index: 9999; /* Ensure it appears above other content */
           }
+
+          .fade-away {
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .fade-away.hide {
+            opacity: 0;
+        }
 
 
     </style>
@@ -288,7 +298,6 @@ if (isset($_POST["id"]) && !empty(trim($_POST["id"]))) {
                         <label>Status</label>
                         <select name="status" class="form-control selectpicker <?php echo (!empty( $status_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $status; ?>">
                              <option value="">Select a product</option>
-                            <option value="Pending" >Pending</option>
                             <option value="In-Progress" >In-Progress</option>
                             <option value="Complete" >Complete</option>
                         </select>
@@ -302,6 +311,22 @@ if (isset($_POST["id"]) && !empty(trim($_POST["id"]))) {
             </main>
         </div>
     </div>
+
+<script>    
+
+   //make alert s to fadeaway
+    function fadeAlerts() {
+                var alerts = document.querySelectorAll('.alert');
+                alerts.forEach(alert => {
+                    setTimeout(() => {
+                        alert.classList.add('hide');
+                        setTimeout(() => alert.remove(), 500); // Remove after fade-out
+                    }, 3000); // Adjust delay as needed
+                });
+            }
+
+            fadeAlerts();
+</script>    
 
     <!-- links for dropdown select box -->
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" ></script>
