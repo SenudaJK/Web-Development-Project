@@ -97,7 +97,7 @@ $role = $_SESSION['role'];
                                             <input type="text" name="search" class="form-control me-2" placeholder="Search by Name" value="<?php echo isset($_GET['search']) ? $_GET['search'] : ''; ?>">
                                                 <button class="btn btn-outline-success" type="submit">Search</button>
                                         </form>
-                                        <!-- <input type="text" id="search" class="form-control" placeholder="Search by Supplier Name or Location" oninput="filterResults()"> -->
+                                        
                                     </div>
                                 </div>
             
@@ -202,32 +202,8 @@ $role = $_SESSION['role'];
             // Update the modal's form hidden input value
             var inputSupplierID = document.getElementById('deleteSupplierID');
             inputSupplierID.value = supplierID;
-        });
-    
-        // function filterResults() {
-        //     var search = document.getElementById('search').value.toLowerCase();
-        //     var table = document.getElementById("suppliertable");
-        //     var rows = table.getElementsByTagName("tr");
-
-        //     for (var i = 1; i < rows.length; i++) { // Start at 1 to skip the header row
-        //         var cells = rows[i].getElementsByTagName("td");
-        //         var match = false;
-                
-        //         for (var j = 0; j < cells.length - 1; j++) { // Exclude the last cell (Action buttons)
-        //             var cellValue = cells[j].textContent || cells[j].innerText;
-        //             if (cellValue.toLowerCase().indexOf(search) > -1) {
-        //                 match = true;
-        //                 break;
-        //             }
-        //         }
-
-        //         if (match) {
-        //             rows[i].style.display = "";
-        //         } else {
-        //             rows[i].style.display = "none";
-        //         }
-        //     }
-        // }
+        });   
+        
     </script>
 </body>
 </html>
