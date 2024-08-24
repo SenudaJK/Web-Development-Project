@@ -139,7 +139,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             <a class="nav-link" href="purchaseView.php"><i class="material-icons">shopping_cart</i>Purchase Orders</a>                            
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">sell</i>Dispatch Orders</a>                            
+                            <a class="nav-link" href="dispatchedOrders.php"><i class="material-icons">sell</i>Dispatch Orders</a>                            
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="suppliers.php"><i class="material-icons">local_shipping</i>Suppliers</a>
