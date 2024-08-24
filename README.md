@@ -78,7 +78,7 @@ Before you begin, ensure you have the following installed on your machine:
 ## User Roles & Permissions
 
 - **Admin**: The admin has full access to all features of the application, including creating, updating, and deleting products, suppliers, inventory, purchase orders, and dispatch orders.
-- **Worker**: Workers have view-only access to the application. They can view products, suppliers, inventory, purchase orders, and dispatch orders but cannot make any changes.
+- **Worker**: Workers have view-only access to the application. They can view and add products, suppliers, inventory, purchase orders, and dispatch orders but cannot make any changes.
 
 ## Troubleshooting
 
