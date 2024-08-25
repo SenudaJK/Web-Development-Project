@@ -194,11 +194,11 @@ $mysqli->close();
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">New Password:</label>
-                            <input type="password" id="password" name="password" class="form-control">
+                            <input type="password" id="password" name="password" minlength="8" class="form-control">
                         </div>
                         <div class="mb-3">
                             <label for="con-password" class="form-label">Confirm Password:</label>
-                            <input type="password" id="con-password" name="con-password" class="form-control">
+                            <input type="password" id="con-password" name="con-password" minlength="8" class="form-control">
                         </div>
                         <button type="submit" class="btn btn-primary">Save Changes</button>
                     </form>
