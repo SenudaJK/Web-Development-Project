@@ -97,6 +97,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 echo "<div class='alert alert-success fade-away text-center' role='alert'>
                         Data successfully submitted
                       </div>";
+
+                header("Location : purchaseView.php");
+                exit();
             } else {
                 echo "<div class='alert alert-danger fade-away text-center' role='alert'>
                         Oops! Something went wrong. Please try again later.
@@ -179,7 +182,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             z-index: 9999;
             /* Ensure it appears above other content */
 
-            
+
         }
 
         .fade-away {
@@ -211,7 +214,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="sidebar">
                     <!-- Sidebar header with company logo and name -->
                     <div class="sidebar-header">
-                        <img src="logo.png" alt="Logo" class="img-fluid">                        
+                        <img src="logo.png" alt="Logo" class="img-fluid">
                     </div>
                     <!-- Sidebar navigation links -->
                     <ul class="nav flex-column">
@@ -396,14 +399,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Function to handle alert fading away
         function fadeAlerts() {
-                var alerts = document.querySelectorAll('.alert');
-                alerts.forEach(alert => {
-                    setTimeout(() => {
-                        alert.classList.add('hide');
-                        setTimeout(() => alert.remove(), 500); // Remove after fade-out
-                    }, 3000); // Adjust delay as needed
-                });
-            }
+            var alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.classList.add('hide');
+                    setTimeout(() => alert.remove(), 500); // Remove after fade-out
+                }, 3000); // Adjust delay as needed
+            });
+        }
 
         fadeAlerts();
 
