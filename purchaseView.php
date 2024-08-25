@@ -40,8 +40,7 @@ $role = $_SESSION['role'];
                 <div class="sidebar">
                     <!-- Sidebar header with company logo and name -->
                     <div class="sidebar-header">
-                        <img src="" alt="Logo" class="img-fluid">
-                        <h4>Company Name</h4>
+                        <img src="logo.png" alt="Logo" class="img-fluid">                        
                     </div>
                     <!-- Sidebar navigation links -->
                     <ul class="nav flex-column">
@@ -162,15 +161,16 @@ $role = $_SESSION['role'];
                                 echo "<td>" . htmlspecialchars($row['OrderDate']) . "</td>";
                                 echo "<td>" . htmlspecialchars($row['Status']) . "</td>";
                                 echo "<td>";
+                                echo '<a href="purchaseRead.php?id=' . $row['PurchaseOrderID'] . '" class="mr-2" title="View more information" data-toggle="tooltip"><span class="fa fa-eye"></span></a>';
+                                echo "&nbsp&nbsp";
+
                                 if ($role !== 'Worker') {
                                     // If the role is not 'worker', display the active links
-                                    echo '<a href="purchaseRead.php?id=' . $row['PurchaseOrderID'] . '" class="mr-2" title="View more information" data-toggle="tooltip"><span class="fa fa-eye"></span></a>';
-                                    echo "&nbsp&nbsp";
+                                    
                                     echo '<a href="purchaseUpdate.php?id=' . $row['PurchaseOrderID'] . '" class="mr-2" title="Update Quantity & Status" data-toggle="tooltip"><span class="fa fa-pencil"></span></a>';
                                 } else {
                                     // If the role is 'worker', display disabled icons without links
-                                    echo '<span class="fa fa-eye" style="color: gray; cursor: not-allowed;" title="View more information (disabled)"></span>';
-                                    echo "&nbsp&nbsp";
+                                    
                                     echo '<span class="fa fa-pencil" style="color: gray; cursor: not-allowed;" title="Update Quantity & Status (disabled)"></span>';
                                 }
                                 echo "</td>";
