@@ -179,8 +179,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                 <div class="sidebar">
                     <!-- Sidebar header with company logo and name -->
                     <div class="sidebar-header">
-                        <img src="" alt="Logo" class="img-fluid">
-                        <h4>Company Name</h4>
+                        <img src="logo.png" alt="Logo" class="img-fluid">                        
                     </div>
                     <!-- Sidebar navigation links -->
                     <ul class="nav flex-column">
