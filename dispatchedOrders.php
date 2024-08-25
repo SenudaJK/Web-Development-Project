@@ -44,7 +44,7 @@ $role = $_SESSION['role'];
                 <div class="sidebar">
                     <!-- Sidebar header with company logo and name -->
                     <div class="sidebar-header">
-                        <img src="logo.png" alt="Logo" class="img-fluid">                        
+                        <img src="logo.png" alt="Logo" class="img-fluid">
                     </div>
                     <!-- Sidebar navigation links -->
                     <ul class="nav flex-column">
@@ -104,10 +104,9 @@ $role = $_SESSION['role'];
 
                     if ($status == 'success') {
                         $message = "Order " . $operation . "d successfully";
-                    } else if ($status == 'inventory_error'){
+                    } else if ($status == 'inventory_error') {
                         $message = "Fail to " . $operation . " order. Available inventory is not enough.";
-                    }
-                    else {
+                    } else {
                         $message = "Fail to " . $operation . " order. Try again later.";
                     }
 
@@ -202,7 +201,7 @@ $role = $_SESSION['role'];
                                                         <td>' . $quantity . '</td>                                                                                                             
                                                         <td>' . $orderDate . '</td>
                                                         <td>';
-                                                        
+
                                                         // check user role and display appropriate actions
                                                         if ($_SESSION['role'] !== 'Worker') {
                                                             echo "<a href='dispatchOrderUpdate.php?updateID=$saleOrderID' class='link-dark'><i class='fa-solid fa-pen-to-square fs-5 me-3'></i></a>";
@@ -264,6 +263,25 @@ $role = $_SESSION['role'];
             fadeAlerts();
         }
     </script>
+    <script>
+        $(document).ready(function() {
+            // display pop up message before deletion
+            $('.link-dark').on('click', function(e) {
+                // Prevent the default process
+                e.preventDefault();
+
+                var result = confirm("Are you sure you want to delete this item?");
+
+                // If click ok, delete the record
+                if (result) {
+                    window.location.href = $(this).attr('href');
+                }
+
+            });
+        });
+    </script>
+    </script>
+
 
 </body>
 

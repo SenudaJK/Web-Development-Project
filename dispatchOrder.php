@@ -1,25 +1,24 @@
 <?php
-//use for debugging purposes
-//die("Error executing query: " . mysqli_error($mysqli));
-
 //connect to the database
 include 'config.php';
 session_start();
+
 // Check if the user is logged in, if not redirect to login page
 if (!isset($_SESSION['username'])) {
     header("Location: index.html");
     exit();
 }
+
 $username = $_SESSION['username'];
 $role = $_SESSION['role'];
 
-//get data from html
+//get data from HTML form
 if (isset($_POST['confirm'])) {
 
     //declare variables
-    $productName = $_POST['product-name']; //stored user entered product name
-    $Man_name = $_POST['store-name']; //stored user entered store name
-    $quantity = $_POST['quantity']; //stored user entered quantity
+    $productName = $_POST['product-name'];
+    $Man_name = $_POST['store-name'];
+    $quantity = $_POST['quantity'];
 
     // Fetch productID using productName
     $sql = "SELECT ProductID 
@@ -30,118 +29,134 @@ if (isset($_POST['confirm'])) {
     $stmt->execute();
     $result = $stmt->get_result();
 
-    // Check the query is successful executed
+    // Check if the product exists
     if (!$result || $result->num_rows == 0) {
         $_SESSION['status'] = 'error';
         $_SESSION['operation'] = 'place';
         header('location: dispatchedOrders.php');
         exit;
-        //no product found
-        //echo "Your request is can not be done now. Please try again later.";
     } else {
-        //fetch an item from result
         $row = $result->fetch_assoc();
         $productID = $row['ProductID'];
 
+        // Fetch ShopID using Man_name
         $sqlStore = "SELECT ShopID 
-                    FROM shop 
-                    WHERE Man_name = ?";
+                     FROM shop 
+                     WHERE Man_name = ?";
         $stmtStore = $mysqli->prepare($sqlStore);
         $stmtStore->bind_param("s", $Man_name);
         $stmtStore->execute();
         $resultStore = $stmtStore->get_result();
 
         if (!$resultStore || $resultStore->num_rows == 0) {
-
             $_SESSION['status'] = 'error';
             $_SESSION['operation'] = 'place';
             header('location: dispatchedOrders.php');
             exit;
-            //echo "Your request is can not be done now. Please try again later";
         } else {
             $rowStore = $resultStore->fetch_assoc();
             $ShopID = $rowStore['ShopID'];
 
-            // get TotalQuantity related to ProductID
+            // Fetch quantity
             $sqlQuantity = "SELECT TotalQuantity 
-                             FROM inventory 
-                             WHERE ProductID = ?";
+                            FROM inventory 
+                            WHERE ProductID = ?";
             $stmtQuantity = $mysqli->prepare($sqlQuantity);
             $stmtQuantity->bind_param("i", $productID);
             $stmtQuantity->execute();
             $resultQuantity = $stmtQuantity->get_result();
 
-            if (!$resultQuantity || $resultQuantity->num_rows == 0) {
+            if ($resultQuantity->num_rows > 0) {
+                $rowQuantity = $resultQuantity->fetch_assoc();
+                $availableQuantity = $rowQuantity['TotalQuantity'];
 
-                $_SESSION['status'] = 'error';
-                $_SESSION['operation'] = 'place';
-                header('location: dispatchedOrders.php');
-                exit;
-                //echo "inventory not found.";
-            }
+                // Calculate the updated quantity
+                $updatedQuantity = $availableQuantity - $quantity;
 
-            $rowQuantity = mysqli_fetch_assoc($resultQuantity);
-            $availableQuantity = $rowQuantity['TotalQuantity'];
+                // Fetch the latest unit price
+                $sqlFetchUnitPrice = "SELECT UnitPrice 
+                                      FROM purchaseorders 
+                                      WHERE ProductID = ? 
+                                      ORDER BY OrderDate DESC LIMIT 1";
+                $stmtFetchUnitPrice = $mysqli->prepare($sqlFetchUnitPrice);
+                $stmtFetchUnitPrice->bind_param("i", $productID);
+                $stmtFetchUnitPrice->execute();
+                $resultFetchUnitPrice = $stmtFetchUnitPrice->get_result();
 
-            // check available quantity is enough to update an order
-            if ($quantity > $availableQuantity) {
+                if ($resultFetchUnitPrice->num_rows > 0) {
+                    $row = $resultFetchUnitPrice->fetch_assoc();
+                    $unitPrice = $row['UnitPrice'];
 
-                $_SESSION['status'] = 'inventory_error';
-                $_SESSION['operation'] = 'place';
-                header('location: dispatchedOrders.php');
-                exit;
-                //echo "Available quantity is not enough.";
-            }
+                    // Calculate the total amount using the updated total quantity
+                    $totalValue = $unitPrice * $updatedQuantity;
 
-            // Insert dispatch order data into the salesOrder table
-            $updatedQuantity = $availableQuantity - $quantity;
-            if ($updatedQuantity < 0) {
+                    //checking enough quantity is available to dispatch order
+                    if ($quantity > $availableQuantity) {
 
-                $_SESSION['status'] = 'error';
-                $_SESSION['operation'] = 'place';
-                header('location: dispatchedOrders.php');
-                exit;
-            } else {
-                $sqlUpdateQuantity = "UPDATE inventory
-                                      SET TotalQuantity = ?
-                                      WHERE ProductID = ?";
-                $stmtUpdateQuantity = $mysqli->prepare($sqlUpdateQuantity);
-                $stmtUpdateQuantity->bind_param("ii", $updatedQuantity, $productID);
-
-                if ($stmtUpdateQuantity->execute()) {
-                    $sqlInsertQuery = "INSERT INTO dispatchorders (ProductID, ShopID, quantity, orderDate)
-                                       VALUES (?, ?, ?, NOW())";
-                    $stmtInsert = $mysqli->prepare($sqlInsertQuery);
-                    $stmtInsert->bind_param("iii", $productID, $ShopID, $quantity);
-
-
-                    if ($stmtInsert->execute()) {
-                        $_SESSION['status'] = 'success';
+                        $_SESSION['status'] = 'inventory_error';
                         $_SESSION['operation'] = 'place';
                         header('location: dispatchedOrders.php');
                         exit;
+                        //echo "Available quantity is not enough.";
+                    }
+
+                    //check quantity and total value are positive numbers
+                    if ($updatedQuantity < 0 || $totalValue < 0) {
+                        $_SESSION['status'] = 'error';
+                        $_SESSION['operation'] = 'place';
+                        header('location: dispatchedOrders.php');
+                        exit;
+                    }
+
+                    // Update the inventory table
+                    $sqlUpdateInventory = "UPDATE inventory 
+                                           SET TotalQuantity = ?, TotalValue = ? 
+                                           WHERE ProductID = ?";
+                    $stmtUpdateInventory = $mysqli->prepare($sqlUpdateInventory);
+                    $stmtUpdateInventory->bind_param("idi", $updatedQuantity, $totalValue, $productID);
+
+                    if ($stmtUpdateInventory->execute()) {
+                        // Insert dispatch order data into the dispatchorders table
+                        $sqlInsertQuery = "INSERT 
+                                            INTO dispatchorders (ProductID, ShopID, quantity, orderDate) 
+                                            VALUES (?, ?, ?, NOW())";
+                        $stmtInsert = $mysqli->prepare($sqlInsertQuery);
+                        $stmtInsert->bind_param("iii", $productID, $ShopID, $quantity);
+
+                        if ($stmtInsert->execute()) {
+                            $_SESSION['status'] = 'success';
+                            $_SESSION['operation'] = 'place';
+                            header('location: dispatchedOrders.php');
+                            exit;
+                        } else {
+                            $_SESSION['status'] = 'error';
+                            $_SESSION['operation'] = 'place';
+                            header('location: dispatchedOrders.php');
+                            exit;
+                        }
                     } else {
                         $_SESSION['status'] = 'error';
                         $_SESSION['operation'] = 'place';
                         header('location: dispatchedOrders.php');
                         exit;
-                        //echo "Order placed successfully!";
                     }
-                } else {
-
-                    $_SESSION['status'] = 'error';
-                    $_SESSION['operation'] = 'place';
-                    //echo "can not perform the action";
-                    header('location: dispatchedOrders.php');
-                    exit;
                 }
+            } else {
+                // Handle the case where the product is not found in the inventory
+                $_SESSION['status'] = 'error';
+                $_SESSION['operation'] = 'place';
+                header('location: dispatchedOrders.php');
+                exit;
             }
         }
     }
 }
+
+// Close the database connection
 mysqli_close($mysqli);
 
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -160,7 +175,8 @@ mysqli_close($mysqli);
     <div class="container-fluid">
         <div class="row">
             <!-- Button to toggle sidebar visibility on smaller screens -->
-            <button class="btn d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-expanded="false" aria-controls="sidebar">
+            <button class="btn d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar"
+                aria-expanded="false" aria-controls="sidebar">
                 <i class="fas fa-bars"></i>
             </button>
 
@@ -169,27 +185,33 @@ mysqli_close($mysqli);
                 <div class="sidebar">
                     <!-- Sidebar header with company logo and name -->
                     <div class="sidebar-header">
-                        <img src="logo.png" alt="Logo" class="img-fluid">                        
+                        <img src="" alt="Logo" class="img-fluid">
+                        <h4>Company Name</h4>
                     </div>
                     <!-- Sidebar navigation links -->
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link active" href="dashboard.php"><i class="material-icons">home</i>Dashboard</a>
+                            <a class="nav-link active" href="dashboard.php"><i
+                                    class="material-icons">home</i>Dashboard</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="InventoryUpdate.php"><i class="material-icons">inventory</i>inventory</a>
+                            <a class="nav-link" href="InventoryUpdate.php"><i
+                                    class="material-icons">inventory</i>inventory</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="productGet.php"><i class="material-icons">category</i>Products</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="purchaseView.php"><i class="material-icons">shopping_cart</i>Purchase Orders</a>
+                            <a class="nav-link" href="purchaseView.php"><i
+                                    class="material-icons">shopping_cart</i>Purchase Orders</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="dispatchedOrders.php"><i class="material-icons">sell</i>Dispatch Orders</a>
+                            <a class="nav-link" href="dispatchedOrders.php"><i class="material-icons">sell</i>Dispatch
+                                Orders</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="suppliers.php"><i class="material-icons">local_shipping</i>Suppliers</a>
+                            <a class="nav-link" href="suppliers.php"><i
+                                    class="material-icons">local_shipping</i>Suppliers</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="shopIndex.php"><i class="material-icons md-18">store</i>Shops</a>
@@ -203,7 +225,8 @@ mysqli_close($mysqli);
             <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
 
                 <!-- Header for the main content with title and user information -->
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <div
+                    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">Dispatch Orders</h1>
                     <div class="profile-container">
                         <span href="#" class="d-flex align-items-center text-dark text-decoration-none">
@@ -217,7 +240,7 @@ mysqli_close($mysqli);
                 </div>
                 <!-- Main content can be added here -->
 
-                
+
                 <div class="container">
                     <div class="row">
                         <div class="col-12 col-md-6">
@@ -229,47 +252,27 @@ mysqli_close($mysqli);
                             <form method="post">
                                 <div class="mb-3">
                                     <label>Product Name:</label>
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        id="product-name"
-                                        name="product-name"
-                                        placeholder="Search Product"
-                                        required />
+                                    <input type="text" class="form-control" id="product-name" name="product-name"
+                                        placeholder="Search Product" required />
                                     <div class="product-list" id="product-list"></div>
                                 </div>
                                 <div class="mb-3">
                                     <label>Manager Name:</label>
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        id="store-name"
-                                        name="store-name"
-                                        placeholder="Search Store"
-                                        required />
+                                    <input type="text" class="form-control" id="store-name" name="store-name"
+                                        placeholder="Search Store" required />
                                     <div class="store-list" id="store-list"></div>
                                 </div>
                                 <div class="mb-3">
                                     <label>Quantity:</label>
-                                    <input
-                                        type="number"
-                                        class="form-control"
-                                        id="quantity"
-                                        name="quantity"
-                                        placeholder="Enter Product Quantity"
-                                        min="1"
-                                        required />
+                                    <input type="number" class="form-control" id="quantity" name="quantity"
+                                        placeholder="Enter Product Quantity" min="1" required />
                                 </div>
                                 <div class="mt-4">
-                                    <button type="submit"
-                                        name="confirm"
-                                        id="confirm-btn"
-                                        class="btn btn-primary">
+                                    <button type="submit" name="confirm" id="confirm-btn" class="btn btn-primary">
                                         Confirm
                                     </button>
                                     <button type="button" class="btn btn-secondary">
-                                        <a
-                                            href="dispatchedOrders.php"
+                                        <a href="dispatchedOrders.php"
                                             class="text-light link-offset-2 link-underline link-underline-opacity-0">Cancel</a>
                                     </button>
                                 </div>
@@ -279,8 +282,7 @@ mysqli_close($mysqli);
                 </div>
 
                 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-                <script
-                    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
                     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
                     crossorigin="anonymous"></script>
                 <script src="dispatchProductList.js"></script>
