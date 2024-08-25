@@ -40,7 +40,8 @@ $role = $_SESSION['role'];
                 <div class="sidebar">
                     <!-- Sidebar header with company logo and name -->
                     <div class="sidebar-header">
-                        <img src="logo.png" alt="Logo" class="img-fluid">                        
+                        <img src="" alt="Logo" class="img-fluid">
+                        <h4>Company Name</h4>
                     </div>
                     <!-- Sidebar navigation links -->
                     <ul class="nav flex-column">
@@ -93,6 +94,7 @@ $role = $_SESSION['role'];
                     </div>
                 </div>
                 <!-- Main content can be added here -->
+                 <!--alert -->
             <?php
                 if (isset($_GET['status']) && isset($_GET['message'])) {
                         $status = $_GET['status'];
@@ -158,11 +160,7 @@ $role = $_SESSION['role'];
                                 echo "<td>" . htmlspecialchars($row['QuantityRecieved']) . "</td>";
                                 echo "<td>" . htmlspecialchars($row['UnitPrice']) . "</td>";
                                 echo "<td>" . htmlspecialchars($row['OrderDate']) . "</td>";
-
-
                                 echo "<td>" . htmlspecialchars($row['Status']) . "</td>";
-
-
                                 echo "<td>";
                                 if ($role !== 'Worker') {
                                     // If the role is not 'worker', display the active links
@@ -184,9 +182,29 @@ $role = $_SESSION['role'];
                             // Free result set
                             $result->free();
                         } else {
-                            echo '<div class="alert alert-danger"><em>No records were found.</em></div>';
+                           
+                            echo '<div style="height: 320px; overflow-y: auto;">';
+                            echo '<table class="table table-bordered table-striped" id="ordertable">';
+                            echo "<thead>";
+                            echo "<tr>";
+                            echo "<th>Order ID</th>";
+                            echo "<th>Product Name</th>";
+                            echo "<th>Supplier Name</th>";
+                            echo "<th>Qty order</th>";
+                            echo "<th>Qty received</th>";
+                            echo "<th>Unit Price</th>";
+                            echo "<th>Ordered Date</th>";
+                            echo "<th>Status</th>";
+                            echo "<th>Action</th>";
+                            echo "</tr>";
+                            echo "</thead>";
+                            echo '<tr><div><em>No records were found.</em></div></tr>';
+                            echo "</table>";
+                            
+                           
                         }
                     } else {
+                        
                         echo "Oops! Something went wrong. Please try again later.";
                     }
 
@@ -204,30 +222,33 @@ $role = $_SESSION['role'];
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        function filterResults() {
-            var search = document.getElementById('search').value.toLowerCase();
-            var table = document.getElementById("ordertable");
-            var rows = table.getElementsByTagName("tr");
+       function filterResults() {
+    var search = document.getElementById('search').value.toLowerCase();
+    var table = document.getElementById("ordertable");
+    var rows = table.getElementsByTagName("tr");
 
-            for (var i = 1; i < rows.length; i++) { // Start at 1 to skip the header row
-                var cells = rows[i].getElementsByTagName("td");
-                var match = false;
+    for (var i = 1; i < rows.length; i++) { // Start at 1 to skip the header row
+        var productNameCell = rows[i].getElementsByTagName("td")[1]; // Product Name column (2nd column)
+        var supplierNameCell = rows[i].getElementsByTagName("td")[2]; // Supplier Name column (3rd column)
+        var match = false;
 
-                for (var j = 0; j < cells.length - 1; j++) { // Exclude the last cell (Action buttons)
-                    var cellValue = cells[j].textContent || cells[j].innerText;
-                    if (cellValue.toLowerCase().indexOf(search) > -1) {
-                        match = true;
-                        break;
-                    }
-                }
+        if (productNameCell && supplierNameCell) {
+            var productNameValue = productNameCell.textContent || productNameCell.innerText;
+            var supplierNameValue = supplierNameCell.textContent || supplierNameCell.innerText;
 
-                if (match) {
-                    rows[i].style.display = "";
-                } else {
-                    rows[i].style.display = "none";
-                }
+            // Check if the search term matches either Product Name or Supplier Name
+            if (productNameValue.toLowerCase().indexOf(search) > -1 || supplierNameValue.toLowerCase().indexOf(search) > -1) {
+                match = true;
             }
         }
+
+        if (match) {
+            rows[i].style.display = "";
+        } else {
+            rows[i].style.display = "none";
+        }
+    }
+} 
 
         document.getElementById('downloadCSV').addEventListener('click', function () {
             window.location.href = 'purchaseCSV.php';
