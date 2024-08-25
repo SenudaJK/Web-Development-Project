@@ -25,7 +25,8 @@ $role = $_SESSION['role'];
     <style>
         .panel {
             height: 20vh;
-            background-color: #77B0AA;
+            background-color: #003C43;
+            color: white;
             border: 2px outset black;
         }
 
