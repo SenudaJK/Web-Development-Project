@@ -244,16 +244,17 @@ $role = $_SESSION['role'];
             <div class="faq-section">
                 <h4>Frequently Asked Questions</h4>
                 <div class="faq-item">
-                    <h5>How do I manage camera inventory?</h5>
-                    <p>To manage the camera inventory, go to the Inventory section in the admin dashboard. From there, you can add, update, or remove camera listings, and manage their availability.</p>
+                    <h5>How do I view purchased orders and download reports?</h5>
+                    <p>Purchase orders can be viewed in the purchased order section in the sidebar. You can view product names, supplier Names, quantities, prices, ordered date and Statuses. 
+                        You can click on the button “Download CSV Report” to download the reports.</p>
                 </div>
                 <div class="faq-item">
-                    <h5>How do I view and manage rental orders?</h5>
-                    <p>Rental orders can be viewed and managed in the Orders section. You can see active rentals, view customer details, update order statuses, and process returns.</p>
+                    <h5>How do I manage Suppliers?</h5>
+                    <p>To manage the Suppliers, go to the Suppliers section in the sidebar, and from there, you can add, update, and search Supplier details.</p>
                 </div>
                 <div class="faq-item">
-                    <h5>How do I update admin account settings?</h5>
-                    <p>You can update your account settings, including password changes and notification preferences, in the Settings section of the user profile.</p>
+                    <h5>How do I update the user account details?</h5>
+                    <p>Go to the user profile and click on "Edit Profile". You can change your Phone Number and password. Then click on “Save Changes” button.</p>
                 </div>
             </div>
         </div>
