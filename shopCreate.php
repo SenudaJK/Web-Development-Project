@@ -187,8 +187,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                                 </div>
                                 <div class="form-group">
                                     <label>Shop's Email</label>
-                                    <input type="text" name="email" class="form-control <?php echo (!empty($email_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $s_email; ?>">
-                                    <span class="invalid-feedback"><?php echo $email_err;?></span>
+                                    <input type="text" name="email" class="form-control <?php echo (!empty($semail_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $s_email; ?>">
+                                    <span class="invalid-feedback"><?php echo $semail_err;?></span>
                                 </div><br>
                                 <input type="submit" class="btn btn-primary" value="Submit">
                                 <a href="shopIndex.php" class="btn btn-secondary ml-2">Cancel</a>
