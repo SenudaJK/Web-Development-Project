@@ -16,7 +16,7 @@ $dispatchData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $productNames = [];
 $quantities = [];
 
-// Prepare data for Chart.js
+// Prepare data for Chart
 foreach ($dispatchData as $row) {
     $productNames[] = $row['ProductName'];
     $quantities[] = $row['TotalDispatched'];
