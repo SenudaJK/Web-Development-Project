@@ -7,7 +7,7 @@ function validateForm() {
     const sku = document.getElementById('sku').value;
     const dateAdded = document.getElementById('dateadded').value;
 
-    const skupattern = /^#[0-9]+$/;
+    const skupattern = /^[0-9]+$/;
     const current_date = new Date();
     const selected_date = new Date(dateAdded);
 
