@@ -98,7 +98,7 @@ $role = $_SESSION['role'];
 
                 <div style="height: 400px; overflow-y: auto;">
                 <table class="table table-bordered table-striped text-center">
-                    <thead class="table-info">
+                    <thead>
                     <tr>
                         <th scope="col">Product ID</th>
                         <th scope="col">Product Name</th>
