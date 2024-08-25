@@ -86,7 +86,7 @@ if (isset($_POST['confirm'])) {
             // check available quantity is enough to update an order
             if ($quantity > $availableQuantity) {
 
-                $_SESSION['status'] = 'error';
+                $_SESSION['status'] = 'inventory_error';
                 $_SESSION['operation'] = 'place';
                 header('location: dispatchedOrders.php');
                 exit;
