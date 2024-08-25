@@ -76,7 +76,7 @@ if (empty($_SESSION['csrf_token'])) {
                                     class="material-icons">shopping_cart</i>Purchase Orders</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="material-icons">sell</i>Dispatch Orders</a>
+                            <a class="nav-link" href="dispatchedOrders.php"><i class="material-icons">sell</i>Dispatch Orders</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="suppliers.php"><i
