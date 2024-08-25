@@ -98,7 +98,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         Data successfully submitted
                       </div>";
 
-                header("Location : purchaseView.php");
+                header("Location: purchaseView.php");
                 exit();
             } else {
                 echo "<div class='alert alert-danger fade-away text-center' role='alert'>
