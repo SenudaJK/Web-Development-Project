@@ -77,47 +77,37 @@ if (isset($_POST["id"]) && !empty(trim($_POST["id"]))) {
                 if ($stmt = $mysqli->prepare($sql)) {
                     $stmt->bind_param("ii", $id,$receivedqty);
                     if ($stmt->execute()) {
-                        // Records created successfully. Redirect to same page
-                        echo "<div class='alert alert-success text-center mx-auto my-3 fade-away' role='alert' id ='customAlert'>
-                                    Succesfully updated
-                                    
-                            </div>";
-                               
+                        // Records updated successfully. Redirect to purchaseview page
+                           header("Location: purchaseView.php?status=success&message=Data+successfully+Updated");
+                            exit();   
                   
+                         } else {
                         
-                        
-                    } else {
-                        
-                        echo "<div class='alert alert-danger fade-away' role='alert' id ='customAlert'>
-                                    Oops! Something went wrong. Please try again later.
-                                    
-                            </div>";
+                        header("Location: purchaseView.php?status=error&message=Oops!+Something+went+wrong.+Please+try+again+later.");
+                        exit();
                     }
                 } else {
                     
-                    echo "<div class='alert alert-danger fade-away' role='alert'id ='customAlert'>
-                                    Failed to prepare update SQL statement.
-                                    
-                            </div>";
+                    
+                    header("Location: purchaseView.php?status=error&message=Failed+to+prepare+update+SQL+statement.");
+                    exit();       
 
                 }
 
             } else {
-                echo "<div class='alert alert-danger fade-away' role='alert'id ='customAlert'>
-                Oops! Something went wrong. Please try again later.
                 
-                     </div>";
+                     header("Location: purchaseView.php?status=error&message=Oops!+Something+went+wrong.+Please+try+again+later.");
+                     exit();
+
             }
         } else {
-            echo "<div class='alert alert-danger fade-away' role='alert'id ='customAlert'>
-                                    Failed to prepare update SQL statement.
-                                    
-                 </div>";
+           
+                 header("Location: purchaseView.php?status=error&message=Failed+to+prepare+update+SQL+statement.");
+                 exit();   
 
         }
 
     }
-
     // Close statement
     $stmt->close();
     $mysqli->close();
@@ -154,7 +144,7 @@ if (isset($_POST["id"]) && !empty(trim($_POST["id"]))) {
 
     $mysqli->close();
 } else {
-    // URL doesn't contain id parameter. Redirect to error page
+    //  Redirect to error page
     header("location: purchaseError.php");
     exit();
 }
@@ -195,27 +185,7 @@ if (isset($_POST["id"]) && !empty(trim($_POST["id"]))) {
          padding: 20px; 
         }        
 
-         #customAlert {
-           width: 50%; 
-           max-width: 600px; 
-           min-width: 300px; 
-        }
-
-        .alert {
-          position: fixed;          
-          top: 0; /* Center vertically*/    
-          left: 40%; /* Center horizontally */      
-          z-index: 9999; /* Ensure it appears above other content */
-          }
-
-          .fade-away {
-            opacity: 1;
-            transition: opacity 0.5s ease-out;
-        }
-
-        .fade-away.hide {
-            opacity: 0;
-        }
+        
 
 
     </style>
@@ -311,21 +281,7 @@ if (isset($_POST["id"]) && !empty(trim($_POST["id"]))) {
         </div>
     </div>
 
-<script>    
-
-   //make alert s to fadeaway
-    function fadeAlerts() {
-                var alerts = document.querySelectorAll('.alert');
-                alerts.forEach(alert => {
-                    setTimeout(() => {
-                        alert.classList.add('hide');
-                        setTimeout(() => alert.remove(), 500); // Remove after fade-out
-                    }, 3000); // Adjust delay as needed
-                });
-            }
-
-            fadeAlerts();
-</script>    
+ 
 
     <!-- links for dropdown select box -->
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" ></script>
