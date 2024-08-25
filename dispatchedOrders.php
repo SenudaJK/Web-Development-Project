@@ -104,7 +104,10 @@ $role = $_SESSION['role'];
 
                     if ($status == 'success') {
                         $message = "Order " . $operation . "d successfully";
-                    } else {
+                    } else if ($status == 'inventory_error'){
+                        $message = "Fail to " . $operation . " order. Available inventory is not enough.";
+                    }
+                    else {
                         $message = "Fail to " . $operation . " order. Try again later.";
                     }
 
