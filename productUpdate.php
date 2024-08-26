@@ -91,15 +91,15 @@ $role = $_SESSION['role'];
                     $brand = $_POST['brand'];
                     $type = $_POST['type'];
                     $sku = $_POST['sku'];
-                    $dateAdded = $_POST['dateadded'];
+                    // $dateAdded = $_POST['dateadded'];
                     $status = $_POST['status'];
 
-                    $sql = "UPDATE `products` SET `ProductName`=?, `Brand`=?, `Type`=?, `SKU`=?, `DateAdded`=?, `status`=? WHERE ProductID=?";
+                    $sql = "UPDATE `products` SET `ProductName`=?, `Brand`=?, `Type`=?, `SKU`=?, `DateAdded`=NOW(), `status`=? WHERE `ProductID`=?";
 
                     $stmt = $mysqli->prepare($sql);
 
                     if ($stmt) {
-                        $stmt->bind_param("ssssssi", $productName, $brand, $type, $sku, $dateAdded, $status, $Product_Id);
+                        $stmt->bind_param("sssssi", $productName, $brand, $type, $sku, $status, $Product_Id);
 
                         if ($stmt->execute()) {
                             header("Location: productGet.php?msg=Record Updated successfully");
@@ -153,13 +153,7 @@ $role = $_SESSION['role'];
                                 <input type="text" class="form-control" id="sku" name="sku" value ="<?php echo $row ['SKU']?>">
                                 <small id="skuError" class="text-danger"></small>
                             </div>
-
-                            <div class="mb-4">
-                                <label class="form-label">Date Added:</label>
-                                <input type="date" class="form-control" id="dateadded" name="dateadded" value ="<?php echo date('Y-m-d', strtotime($row['DateAdded'])); ?>">
-                                <small id="dateAddedError" class="text-danger"></small>
-                            </div>
-
+                            
                             <div class="mb-4">
                                 <label class="form-label">Status:</label>
                                 <select name="status" class="form-control selectpicker" required>
