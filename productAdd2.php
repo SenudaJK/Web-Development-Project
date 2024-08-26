@@ -95,34 +95,28 @@ $role = $_SESSION['role'];
             
                                 <div class="mb-3">
                                     <label class="form-label">Product Name:</label>
-                                    <input type="text" class="form-control" id="productname" name="productname" placeholder="Canon EOS 5D Mark IV">
+                                    <input type="text" class="form-control" id="productname" name="productname">
                                     <small id="productNameError" class="text-danger"></small>
                                 </div>
             
                                 <div class="col mb-3">
                                     <label class="form-label">Brand:</label>
-                                    <input type="text" class="form-control" id="brand" name="brand" placeholder="Canon">
+                                    <input type="text" class="form-control" id="brand" name="brand">
                                     <small id="brandError" class="text-danger"></small>
                                 </div>
             
                                 <div class="col mb-3">
                                     <label class="form-label">Type:</label>
-                                    <input type="text" class="form-control" id="type" name="type" placeholder="DSLR">
+                                    <input type="text" class="form-control" id="type" name="type">
                                     <small id="typeError" class="text-danger"></small>
                                 </div>
             
                                 <div class="col mb-3">
                                     <label class="form-label">SKU:</label>
-                                    <input type="text" class="form-control" id="sku" name="sku" placeholder="#203472">
+                                    <input type="text" class="form-control" id="sku" name="sku">
                                     <small id="skuError" class="text-danger"></small>
-                                </div>
-            
-                                <div class="mb-4">
-                                    <label class="form-label">Date Added:</label>
-                                    <input type="date" class="form-control" id="dateadded" name="dateadded">
-                                    <small id="dateAddedError" class="text-danger"></small>
-                                </div>
-                                
+                                </div>            
+                                                               
                                 <div>
                                     <button type="submit" class="btn btn-success" name="submit">Save</button>
                                     <a href="productGet.php" class="btn btn-danger">Cancel</a>
