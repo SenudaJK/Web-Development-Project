@@ -204,8 +204,8 @@ $role = $_SESSION['role'];
 
                                                         // check user role and display appropriate actions
                                                         if ($_SESSION['role'] !== 'Worker') {
-                                                            echo "<a href='dispatchOrderUpdate.php?updateID=$saleOrderID' class='link-dark'><i class='fa-solid fa-pen-to-square fs-5 me-3'></i></a>";
-                                                            echo "<a href='dispatchOrderDelete.php?deleteID=$saleOrderID' class='link-dark'><i class='fa-solid fa-trash-alt fs-5'></i></a>";
+                                                            echo "<a href='dispatchOrderUpdate.php?updateID=$saleOrderID' class='link-dark update-link'><i class='fa-solid fa-pen-to-square fs-5 me-3'></i></a>";
+                                                            echo "<a href='dispatchOrderDelete.php?deleteID=$saleOrderID' class='link-dark delete-link'><i class='fa-solid fa-trash-alt fs-5'></i></a>";
                                                         } else {
                                                             echo "<i class='fa-solid fa-pen-to-square fs-5 me-3' style='color: gray; cursor: not-allowed;' title='Edit (disabled)'></i>";
                                                             echo "<i class='fa-solid fa-trash-alt fs-5' style='color: gray; cursor: not-allowed;' title='Delete (disabled)'></i>";
@@ -266,7 +266,7 @@ $role = $_SESSION['role'];
     <script>
         $(document).ready(function() {
             // display pop up message before deletion
-            $('.link-dark').on('click', function(e) {
+            $('.delete-link').on('click', function(e) {
                 // Prevent the default process
                 e.preventDefault();
 
