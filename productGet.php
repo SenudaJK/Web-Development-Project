@@ -87,7 +87,7 @@ $role = $_SESSION['role'];
                 <?php
                 if(isset($_GET['msg'])) {
                     $msg = $_GET['msg'];
-                    echo '<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    echo '<div class="alert alert-success alert-dismissible fade show" role="alert">
                     '.$msg.'
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>';
@@ -96,9 +96,9 @@ $role = $_SESSION['role'];
                 <a href="productAdd2.php" class="btn btn-primary mb-4">Add New</a>
                 <button id="downloadCSV" class="btn btn-primary mb-4" style="margin-bottom: 1rem;">Download CSV Report</button>
 
-                <div style="height: 400px; overflow-y: auto;">
+                <div style="height: 350px; overflow-y: auto;">
                 <table class="table table-bordered table-striped text-center">
-                    <thead>
+                    <thead class="table">
                     <tr>
                         <th scope="col">Product ID</th>
                         <th scope="col">Product Name</th>
