@@ -91,81 +91,87 @@ if (isset($_POST['confirm'])) {
             $rowStore = $resultStore->fetch_assoc();
             $ShopID = $rowStore['ShopID'];
 
-            // get TotalQuantity related to ProductID
+            // Fetch quantity
             $sqlQuantity = "SELECT TotalQuantity 
-                            FROM Inventory 
+                            FROM inventory 
                             WHERE ProductID = ?";
             $stmtQuantity = $mysqli->prepare($sqlQuantity);
             $stmtQuantity->bind_param("i", $productID);
             $stmtQuantity->execute();
             $resultQuantity = $stmtQuantity->get_result();
 
-            if (!$resultQuantity || $resultQuantity->num_rows == 0) {
-                $_SESSION['status'] = 'error';
-                $_SESSION['operation'] = 'update';
-                header('location: dispatchedOrders.php');
-                exit;
-                //echo "Inventory not found.";
-            }
+            if ($resultQuantity->num_rows > 0) {
+                $rowQuantity = $resultQuantity->fetch_assoc();
+                $availableQuantity = $rowQuantity['TotalQuantity'];
 
-            $rowQuantity = $resultQuantity->fetch_assoc();
-            $availableQuantity = $rowQuantity['TotalQuantity'];
-
-            // check available quantity is enough to update an order
-            if ($quantity > $availableQuantity) {
-                $_SESSION['status'] = 'inventory_error';
-                $_SESSION['operation'] = 'update';
-                header('location: dispatchedOrders.php');
-                exit;
-                //echo "Available quantity is not enough.";
-            }
-
-            // Insert updated dispatch order data into the salesOrder table
-            $sqlInsertQuery = "UPDATE dispatchorders
-                               SET ProductID = ?,
-                               ShopID = ?,
-                               Quantity = ?,
-                               OrderDate = NOW()
-                               WHERE DispatchOrderID = ?";
-            $stmtUpdate = $mysqli->prepare($sqlInsertQuery);
-            $stmtUpdate->bind_param("iiii", $productID, $ShopID, $quantity, $updateID);
-
-            //display whether order is successfully dispatched or not
-            if ($stmtUpdate->execute()) {
-                // reduce Inventory from Inventory table
+                // Calculate the updated quantity
                 $updatedQuantity = $availableQuantity - ($quantity - $fillQuantity);
 
-                //ensure remaining quantity is not a negative value
-                if ($updatedQuantity < 0) {
-                    $_SESSION['status'] = 'error';
-                    $_SESSION['operation'] = 'update';
-                    header('location: dispatchedOrders.php');
-                    exit;
-                }
+                // Fetch the latest unit price
+                $sqlFetchUnitPrice = "SELECT UnitPrice 
+                                      FROM purchaseorders 
+                                      WHERE ProductID = ? 
+                                      ORDER BY OrderDate DESC LIMIT 1";
+                $stmtFetchUnitPrice = $mysqli->prepare($sqlFetchUnitPrice);
+                $stmtFetchUnitPrice->bind_param("i", $productID);
+                $stmtFetchUnitPrice->execute();
+                $resultFetchUnitPrice = $stmtFetchUnitPrice->get_result();
 
-                $sqlUpdateQuantity = "UPDATE Inventory
-                                      SET TotalQuantity = ?
-                                      WHERE ProductID = ?";
-                $stmtUpdateQuantity = $mysqli->prepare($sqlUpdateQuantity);
-                $stmtUpdateQuantity->bind_param("ii", $updatedQuantity, $productID);
-                $stmtUpdateQuantity->execute();
+                if ($resultFetchUnitPrice->num_rows > 0) {
+                    $row = $resultFetchUnitPrice->fetch_assoc();
+                    $unitPrice = $row['UnitPrice'];
 
-                if ($stmtUpdateQuantity->affected_rows > 0) {
-                    $_SESSION['status'] = 'success';
-                    $_SESSION['operation'] = 'update';
-                    //echo "Order placed successfully!";
-                    header('location: dispatchedOrders.php');
-                } else {
-                    $_SESSION['status'] = 'error';
-                    $_SESSION['operation'] = 'update';
-                    header('location: dispatchedOrders.php');
-                    //echo "Can not update inventory now. Try again later.";
+                    // Calculate the updated total amount
+                    $totalValue = $unitPrice * $updatedQuantity;
+
+                    //checking enough quantity is available to dispatch order
+                    if ($quantity > $availableQuantity) {
+
+                        $_SESSION['status'] = 'inventory_error';
+                        $_SESSION['operation'] = 'place';
+                        header('location: dispatchedOrders.php');
+                        exit;
+                        //echo "Available quantity is not enough.";
+                    }
+
+                    //check quantity and total value are positive numbers
+                    if ($updatedQuantity < 0 || $totalValue < 0) {
+                        $_SESSION['status'] = 'error';
+                        $_SESSION['operation'] = 'place';
+                        header('location: dispatchedOrders.php');
+                        exit;
+                    }
+
+                    // Update the inventory table
+                    $sqlUpdateInventory = "UPDATE inventory 
+                                           SET TotalQuantity = ?, TotalValue = ? 
+                                           WHERE ProductID = ?";
+                    $stmtUpdateInventory = $mysqli->prepare($sqlUpdateInventory);
+                    $stmtUpdateInventory->bind_param("idi", $updatedQuantity, $totalValue, $productID);
+
+                    if ($stmtUpdateInventory->execute()) {
+                        $sqlInsertQuery = "UPDATE dispatchorders
+                                           SET ProductID = ?,
+                                           ShopID = ?,
+                                           Quantity = ?,
+                                           OrderDate = NOW()
+                                           WHERE DispatchOrderID = ?";
+                        $stmtUpdate = $mysqli->prepare($sqlInsertQuery);
+                        $stmtUpdate->bind_param("iiii", $productID, $ShopID, $quantity, $updateID);
+
+                        if ($stmtUpdate->execute()) {
+                            $_SESSION['status'] = 'success';
+                            $_SESSION['operation'] = 'update';
+                            //echo "Order placed successfully!";
+                            header('location: dispatchedOrders.php');
+                        } else {
+                            $_SESSION['status'] = 'error';
+                            $_SESSION['operation'] = 'update';
+                            header('location: dispatchedOrders.php');
+                            //echo "Can not update inventory now. Try again later.";
+                        }
+                    }
                 }
-            } else {
-                $_SESSION['status'] = 'error';
-                $_SESSION['operation'] = 'update';
-                header('location: dispatchedOrders.php');
-                //echo "Something went wrong. Can not update your inventory now.";
             }
         }
     }
@@ -201,7 +207,7 @@ $mysqli->close();
                 <div class="sidebar">
                     <!-- Sidebar header with company logo and name -->
                     <div class="sidebar-header">
-                        <img src="logo.png" alt="Logo" class="img-fluid">                        
+                        <img src="logo.png" alt="Logo" class="img-fluid">
                     </div>
                     <!-- Sidebar navigation links -->
                     <ul class="nav flex-column">
@@ -244,12 +250,12 @@ $mysqli->close();
                                 <span><?php echo htmlspecialchars($username); ?></span>
                                 <span><?php echo htmlspecialchars($role); ?></span>
                             </div>
-                        </span>                        
+                        </span>
                     </div>
                 </div>
                 <!-- Main content can be added here -->
 
-                
+
                 <div class="container">
                     <div class="row">
                         <div class="col-12 col-md-6 mb-3">
