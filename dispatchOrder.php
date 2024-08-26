@@ -164,7 +164,7 @@ mysqli_close($mysqli);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Name</title>
+    <title>Place New Order</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -185,8 +185,7 @@ mysqli_close($mysqli);
                 <div class="sidebar">
                     <!-- Sidebar header with company logo and name -->
                     <div class="sidebar-header">
-                        <img src="" alt="Logo" class="img-fluid">
-                        <h4>Company Name</h4>
+                        <img src="logo.png" alt="Logo" class="img-fluid">                        
                     </div>
                     <!-- Sidebar navigation links -->
                     <ul class="nav flex-column">
