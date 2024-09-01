@@ -41,6 +41,7 @@ $(document).ready(function () {
         if (!/[0-9]/.test(password)) {
             alert("Password must include at least one number.");
             isValid = false;
+        }
 
         // Prevent form submission if there are validation errors
         if (!isValid) {
